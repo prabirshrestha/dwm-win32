@@ -14,7 +14,7 @@
  */
 
 #define WIN32_LEAN_AND_MEAN
-#define _WIN32_WINNT		0x0500
+#define _WIN32_WINNT			0x0500
 
 #include <windows.h>
 #include <winuser.h>
@@ -23,10 +23,11 @@
 #include <shellapi.h>
 #include <stdbool.h>
 
-#define NAME			"dwm-win32" 	/* Used for window name/class */
+#define NAME					"dwm-win32" 	/* Used for window name/class */
 
 /* macros */
-#define ISVISIBLE(x)            (x->tags & tagset[seltags])
+#define ISVISIBLE(x)            ((x)->tags & tagset[seltags])
+#define ISFOCUSABLE(x)			(!(x)->isminimized && ISVISIBLE(x) && IsWindowVisible((x)->hwnd))
 #define LENGTH(x)               (sizeof x / sizeof x[0])
 #define MAX(a, b)               ((a) > (b) ? (a) : (b))
 #define MIN(a, b)               ((a) < (b) ? (a) : (b))
@@ -36,7 +37,7 @@
 #define TAGMASK                 ((int)((1LL << LENGTH(tags)) - 1))
 #define TEXTW(x)                (textnw(x, strlen(x)))
 #ifdef NDEBUG
-# define debug(format, args...)
+# define debug(format, args...) do { } while(false)
 #else
 # define debug eprint
 #endif
@@ -73,10 +74,19 @@ typedef struct {
 typedef struct Client Client;
 struct Client {
 	HWND hwnd;
+	HWND parent;
+	HWND root;
+	DWORD threadid;
 	int x, y, w, h;
 	int bw; // XXX: useless?
 	unsigned int tags;
-	bool isminimized, isfixed, isfloating, isurgent, ignore, border;
+	bool isminimized;
+	bool isfloating;
+	bool isalive;
+	bool ignore;
+	bool border;
+	bool wasvisible;
+	bool isfixed, isurgent; // XXX: useless?
 	Client *next;
 	Client *snext;
 };
@@ -120,9 +130,12 @@ static void focusstack(const Arg *arg);
 static Client *getclient(HWND hwnd);
 LPSTR getclientclassname(HWND hwnd);
 LPSTR getclienttitle(HWND hwnd);
+HWND getroot(HWND hwnd);
 static void grabkeys(HWND hwnd);
 static void killclient(const Arg *arg);
+static Client *manage(HWND hwnd);
 static void monocle(void);
+static Client *nextchild(Client *p, Client *c);
 static Client *nexttiled(Client *c);
 static void quit(const Arg *arg);
 static void resize(Client *c, int x, int y, int w, int h);
@@ -149,11 +162,11 @@ static void toggleview(const Arg *arg);
 static void unmanage(Client *c);
 static void updatebar(void);
 static void updategeom(void);
-static void updatestatus(void);
 static void view(const Arg *arg);
 static void zoom(const Arg *arg);
 
-/* Shell Hook stuff */
+/* Shell hook stuff */
+
 typedef BOOL (*RegisterShellHookWindowProc) (HWND);
 RegisterShellHookWindowProc RegisterShellHookWindow;
 
@@ -169,7 +182,7 @@ static char stext[256];
 static int sx, sy, sw, sh; /* X display screen geometry x, y, width, height */ 
 static int by, bh, blw;    /* bar geometry y, height and layout symbol width */
 static int wx, wy, ww, wh; /* window area geometry x, y, width, height, bar excluded */
-static unsigned int seltags = 0, sellt = 0;
+static unsigned int seltags, sellt;
 
 static Client *clients = NULL;
 static Client *sel = NULL;
@@ -182,6 +195,14 @@ static UINT shellhookid;	/* Window Message id */
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[sizeof(unsigned int) * 8 < LENGTH(tags) ? -1 : 1]; };
+
+/* elements of the window whose color should be set to the values in the array below */
+static int colorwinelements[] = { COLOR_ACTIVEBORDER, COLOR_INACTIVEBORDER };
+static COLORREF colors[2][LENGTH(colorwinelements)] = { 
+	{ 0, 0 }, /* used to save the values before dwm started */
+	{ selbordercolor, normbordercolor },
+};
+
 
 /* function implementations */
 void
@@ -223,6 +244,15 @@ attachstack(Client *c) {
 	stack = c;
 }
 
+bool
+istoolwindowof(Client *p, Client *c) {
+	debug(" istoolwindowof: %s\n", getclienttitle(p->hwnd));
+	debug("       floating: %d\n", c->isfloating);
+	debug("           root: %d == %d\n", p->root, c->root);
+	debug("       threadid: %d == %d\n", p->threadid, c->threadid);
+	return c->isfloating && (p->root == c->root || p->threadid == c->threadid);
+}
+
 void
 buttonpress(unsigned int button, POINTS *point) {
 	unsigned int i, x, click;
@@ -232,10 +262,8 @@ buttonpress(unsigned int button, POINTS *point) {
 	dc.hdc = GetWindowDC(barhwnd);
 
 	i = x = 0;
-	debug(" buttonpress: x:%d y:%d\n", point->x, point->y);
-	do { x += TEXTW(tags[i]);
-		debug("  %d: %d > %d\n", i, point->x, x);
-	} while(point->x >= x && ++i < LENGTH(tags));
+
+	do { x += TEXTW(tags[i]); } while(point->x >= x && ++i < LENGTH(tags));
 	if(i < LENGTH(tags)) {
 		click = ClkTagBar;
 		arg.ui = 1 << i;
@@ -250,11 +278,13 @@ buttonpress(unsigned int button, POINTS *point) {
 	if (GetKeyState(VK_SHIFT) < 0)
 		return;
 
-	for(i = 0; i < LENGTH(buttons); i++)
-		// XXX: is GetKeyState really working?
+	for(i = 0; i < LENGTH(buttons); i++) {
 		if(click == buttons[i].click && buttons[i].func && buttons[i].button == button
-		   && (!buttons[i].key || GetKeyState(buttons[i].key) < 0))
+			&& (!buttons[i].key || GetKeyState(buttons[i].key) < 0)) {
 			buttons[i].func(click == ClkTagBar && buttons[i].arg.i == 0 ? &arg : &buttons[i].arg);
+			break;
+		}
+	}
 }
 
 void
@@ -274,12 +304,14 @@ cleanup() {
 	while(stack)
 		unmanage(stack);
 
+	SetSysColors(LENGTH(colorwinelements), colorwinelements, colors[0]); 
+
 	DestroyWindow(dwmhwnd);
 }
 
 void
 clearurgent(Client *c) {
-
+	c->isurgent = false;
 }
 
 void
@@ -411,7 +443,7 @@ eprint(const char *errstr, ...) {
 }
 
 void
-focus(Client *c) {
+setselected(Client *c) {
 	if(!c || !ISVISIBLE(c))
 		for(c = stack; c && !ISVISIBLE(c); c = c->snext);
 	if(sel && sel != c)
@@ -422,10 +454,16 @@ focus(Client *c) {
 		detachstack(c);
 		attachstack(c);
 		drawborder(c, selbordercolor);
-		SetForegroundWindow(c->hwnd);
 	}
 	sel = c;
 	drawbar();
+}
+
+void
+focus(Client *c) {
+	setselected(c);
+	if (sel)
+		SetForegroundWindow(sel->hwnd);
 }
 
 void
@@ -435,17 +473,17 @@ focusstack(const Arg *arg) {
 	if(!sel)
 		return;
 	if (arg->i > 0) {
-		for(c = sel->next; c && !ISVISIBLE(c); c = c->next);
+		for(c = sel->next; c && !ISFOCUSABLE(c); c = c->next);
 		if(!c)
-			for(c = clients; c && !ISVISIBLE(c); c = c->next);
+			for(c = clients; c && !ISFOCUSABLE(c); c = c->next);
 	}
 	else {
 		for(i = clients; i != sel; i = i->next)
-			if(ISVISIBLE(i))
+			if(ISFOCUSABLE(i))
 				c = i;
 		if(!c)
 			for(; i; i = i->next)
-				if(ISVISIBLE(i))
+				if(ISFOCUSABLE(i))
 					c = i;
 	}
 	if(c) {
@@ -455,11 +493,44 @@ focusstack(const Arg *arg) {
 }
 
 Client *
+managechildwindows(Client *p) {
+	Client *c, *t;
+	EnumChildWindows(p->hwnd, scan, 0);
+	/* remove all child windows which were not part
+	 * of the enumeration above.
+	 */
+	for(c = clients; c; ) {
+		if (c->parent == p->hwnd) {
+			/* XXX: ismanageable isn't that reliable or some
+			 *      windows change over time which means they
+			 *      were once reported as manageable but not
+			 *      this time so we also check if they are
+			 *      currently visible and if that's the case
+			 *      we keep them in our client list.
+			 */
+			if (!c->isalive && !IsWindowVisible(c->hwnd)) {
+				t = c->next;
+				unmanage(c);
+				c = t;
+				continue;
+			}
+			/* reset flag for next check */
+			c->isalive = false;
+		}
+		c = c->next;
+	}
+
+	return nextchild(p, clients);
+}
+
+Client *
 getclient(HWND hwnd) {
 	Client *c;
 
-	for(c = clients; c && c->hwnd != hwnd; c = c->next);
-	return c;
+	for(c = clients; c; c = c->next)
+		if (c->hwnd == hwnd)
+			return c;
+	return NULL;
 }
 
 LPSTR
@@ -476,6 +547,16 @@ getclienttitle(HWND hwnd) {
 	return buf;
 }
 
+HWND
+getroot(HWND hwnd){
+	HWND parent, deskwnd = GetDesktopWindow();
+
+	while ((parent = GetWindow(hwnd, GW_OWNER)) != NULL && deskwnd != parent)
+		hwnd = parent;
+
+	return hwnd;
+}
+
 void
 grabkeys(HWND hwnd) {
 	int i;
@@ -486,21 +567,72 @@ grabkeys(HWND hwnd) {
 
 bool
 ismanageable(HWND hwnd){
-	debug("ismanageable: %d %s\n", hwnd, getclienttitle(hwnd));
-	debug(" visible: %d\n", IsWindowVisible(hwnd));
-	debug(" parent : %d\n", GetParent(hwnd));
+	if (getclient(hwnd))
+		return true;
 
-	/* Some criteria for windows to be tiled */
-	if (IsWindowVisible(hwnd) && GetParent(hwnd) == 0) {
-		int exstyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-		HWND owner = GetWindow(hwnd, GW_OWNER);
-		debug(" owner:      %d\n", owner);
-		debug(" toolwindow: %d\n", exstyle & WS_EX_TOOLWINDOW);
-		debug(" appwindow:  %d\n", exstyle & WS_EX_APPWINDOW);
-		if (((exstyle & WS_EX_TOOLWINDOW) == 0 && owner == 0) || ((exstyle & WS_EX_APPWINDOW) && owner != 0)) {
+	HWND parent = GetParent(hwnd);	
+	HWND owner = GetWindow(hwnd, GW_OWNER);
+	int style = GetWindowLong(hwnd, GWL_STYLE);
+	int exstyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+	bool pok = (parent != 0 && ismanageable(parent));
+	bool istool = exstyle & WS_EX_TOOLWINDOW;
+	bool isapp = exstyle & WS_EX_APPWINDOW;
+
+	if (pok && !getclient(parent))
+		manage(parent);
+
+	debug("ismanageable: %s\n", getclienttitle(hwnd));
+	debug("    hwnd: %d\n", hwnd);
+	debug("  window: %d\n", IsWindow(hwnd));
+	debug(" visible: %d\n", IsWindowVisible(hwnd));
+	debug("  parent: %d\n", parent);
+	debug("parentok: %d\n", pok);
+	debug("   owner: %d\n", owner);
+	debug(" toolwin: %d\n", istool);
+	debug("  appwin: %d\n", isapp);
+
+	/* XXX: should we do this? */
+	if (GetWindowTextLength(hwnd) == 0) {
+		debug("   title: NULL\n");
+		debug("  manage: false\n");
+		return false;
+	}
+
+	if (style & WS_DISABLED) {
+		debug("disabled: true\n");
+		debug("  manage: false\n");
+		return false;
+	}
+
+	/*
+	 *	WS_EX_APPWINDOW
+	 *		Forces a top-level window onto the taskbar when 
+	 *		the window is visible.
+	 *
+	 *	WS_EX_TOOLWINDOW
+	 *		Creates a tool window; that is, a window intended 
+	 *		to be used as a floating toolbar. A tool window 
+	 *		has a title bar that is shorter than a normal 
+	 *		title bar, and the window title is drawn using 
+	 *		a smaller font. A tool window does not appear in 
+	 *		the taskbar or in the dialog that appears when 
+	 *		the user presses ALT+TAB. If a tool window has 
+	 *		a system menu, its icon is not displayed on the 
+	 *		title bar. However, you can display the system 
+	 *		menu by right-clicking or by typing ALT+SPACE.
+	 */
+
+	if ((parent == 0 && IsWindowVisible(hwnd)) || pok) {
+		if ((!istool && parent == 0) || (istool && pok)) {
+			debug("  manage: true\n");
+			return true;
+		}
+		if (isapp && parent != 0) {
+		    debug("  manage: true\n");
 			return true;
 		}
 	}
+	debug("  manage: false\n");
 	return false;
 }
 
@@ -512,15 +644,18 @@ killclient(const Arg *arg) {
 }
 
 Client*
-manage(HWND hwnd) {
-	debug(" manage %s\n", getclienttitle(hwnd));
+manage(HWND hwnd) {	
 	static Client cz;
-	Client *c;
+	Client *c = getclient(hwnd);
+
+	if (c)
+		return c;
+
+	debug(" manage %s\n", getclienttitle(hwnd));
 
 	WINDOWINFO wi = {
 		.cbSize = sizeof(WINDOWINFO),
 	};
-
 
 	if (!GetWindowInfo(hwnd, &wi))
 		return NULL;
@@ -530,18 +665,24 @@ manage(HWND hwnd) {
 
 	*c = cz;
 	c->hwnd = hwnd;
+	c->threadid = GetWindowThreadProcessId(hwnd, NULL);
+	c->parent = GetParent(hwnd);
+	c->root = getroot(hwnd);
+	c->isalive = true;
 
 	static WINDOWPLACEMENT wp = {
 		.length = sizeof(WINDOWPLACEMENT),
 		.showCmd = SW_RESTORE,
 	};
 
-	SetWindowPlacement(hwnd, &wp);
+	if (IsWindowVisible(c->hwnd))
+		SetWindowPlacement(hwnd, &wp);
 	
 	/* maybe we could also filter based on 
 	 * WS_MINIMIZEBOX and WS_MAXIMIZEBOX
 	 */
-	c->isfloating = wi.dwStyle & WS_POPUP;
+	c->isfloating = (wi.dwStyle & WS_POPUP) || 
+		(!(wi.dwStyle & WS_MINIMIZEBOX) && !(wi.dwStyle & WS_MAXIMIZEBOX));
 
 	debug(" window style: %d\n", wi.dwStyle);
 	debug("     minimize: %d\n", wi.dwStyle & WS_MINIMIZEBOX);
@@ -550,10 +691,11 @@ manage(HWND hwnd) {
 	debug("   isfloating: %d\n", c->isfloating);
 
 	applyrules(c);
+	
+	if (!c->isfloating)
+		setborder(c, false);
 
-	setborder(c, c->isfloating);
-
-	if (c->isfloating) {
+	if (c->isfloating && IsWindowVisible(hwnd)) {
 		debug(" new floating window: x: %d y: %d w: %d h: %d\n", wi.rcWindow.left, wi.rcWindow.top, wi.rcWindow.right - wi.rcWindow.left, wi.rcWindow.bottom - wi.rcWindow.top);
 		resize(c, wi.rcWindow.left, wi.rcWindow.top, wi.rcWindow.right - wi.rcWindow.left, wi.rcWindow.bottom - wi.rcWindow.top);
 	}
@@ -573,8 +715,14 @@ monocle(void) {
 }
 
 Client *
+nextchild(Client *p, Client *c) {
+	for(; c && c->parent != p->hwnd; c = c->next);
+	return c;
+}
+
+Client *
 nexttiled(Client *c) {
-	for(; c && (c->isfloating || c->isminimized || !ISVISIBLE(c)); c = c->next);
+	for(; c && (c->isfloating || IsIconic(c->hwnd) || !ISVISIBLE(c) || !IsWindowVisible(c->hwnd)); c = c->next);
 	return c;
 }
 
@@ -585,10 +733,10 @@ quit(const Arg *arg) {
 
 void
 resize(Client *c, int x, int y, int w, int h) {
-#if 0
-	if(w <= 0 || h <= 0)
+	if(w <= 0 && h <= 0) {
+		setvisibility(c->hwnd, false);
 		return;
-#endif
+	}
 	if(x > sx + sw)
 		x = sw - WIDTH(c);
 	if(y > sy + sh)
@@ -606,35 +754,14 @@ resize(Client *c, int x, int y, int w, int h) {
 		c->y = y;
 		c->w = w;
 		c->h = h;
-		debug(" resize %s: x: %d y: %d w: %d h: %d\n", getclienttitle(c->hwnd), x, y, w, h);
+		debug(" resize %d: %s: x: %d y: %d w: %d h: %d\n", c->hwnd, getclienttitle(c->hwnd), x, y, w, h);
 		SetWindowPos(c->hwnd, HWND_TOP, c->x, c->y, c->w, c->h, SWP_NOACTIVATE);
 	}
 }
 
 void
 restack(void) {
-#if 0
-	Client *c;
-	XEvent ev;
-	XWindowChanges wc;
 
-	drawbar();
-	if(!sel)
-		return;
-	if(sel->isfloating || !lt[sellt]->arrange)
-		XRaiseWindow(dpy, sel->win);
-	if(lt[sellt]->arrange) {
-		wc.stack_mode = Below;
-		wc.sibling = barwin;
-		for(c = stack; c; c = c->snext)
-			if(!c->isfloating && ISVISIBLE(c)) {
-				XConfigureWindow(dpy, c->win, CWSibling|CWStackMode, &wc);
-				wc.sibling = c->win;
-			}
-	}
-	XSync(dpy, false);
-	while(XCheckMaskEvent(dpy, EnterWindowMask, &ev));
-#endif
 }
 
 LRESULT CALLBACK barhandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -680,9 +807,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		default:
 			if (msg == shellhookid) { /* Handle the shell hook message */
-				debug(" SHELLHOOK: %d == %d\n", wParam, HSHELL_WINDOWACTIVATED);
 				Client *c = getclient((HWND)lParam);
-				switch (wParam) {
+				switch (wParam & 0x7fff) {
 					/* The first two events are also trigger if windows
 					 * are being hidden or shown because of a tag
 					 * switch, therefore we ignore them in this case.
@@ -690,24 +816,42 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					case HSHELL_WINDOWCREATED:
 						debug("window created: %s\n", getclienttitle((HWND)lParam));
 						if (!c && ismanageable((HWND)lParam)) {
-							manage((HWND)lParam);
+							c = manage((HWND)lParam);
+							managechildwindows(c);
 							arrange();
 						}
 						break;
 					case HSHELL_WINDOWDESTROYED:
-						if (c)
+						if (c) {
+							debug(" window %s: %s\n", c->ignore ? "hidden" : "destroyed", getclienttitle(c->hwnd));
 							if (!c->ignore)
 								unmanage(c);
 							else
 								c->ignore = false;
-						else 
-							debug(" unmanaged window destroyed");
+						} else {
+							debug(" unmanaged window destroyed\n");
+						}
 						break;
 					case HSHELL_WINDOWACTIVATED:
 						debug(" window activated: %s || %d\n", c ? getclienttitle(c->hwnd) : "unknown", (HWND)lParam);
-						if (c)
-							focus(c);
-						else  {
+						if (c) {
+							Client *t = sel;
+							managechildwindows(c);
+							setselected(c);
+							/* check if the previously selected 
+							 * window got minimized
+							 */
+							if (t && (t->isminimized = IsIconic(t->hwnd))) {
+								debug(" active window got minimized: %s\n", getclienttitle(t->hwnd));
+								arrange();
+							}
+							/* the newly focused window was minimized */
+							if (sel->isminimized) {
+								debug(" newly active window was minimized: %s\n", getclienttitle(sel->hwnd));
+								sel->isminimized = false;								
+								zoom(NULL);
+							}
+						} else  {
 							/* Some window don't seem to generate 
 							 * HSHELL_WINDOWCREATED messages therefore 
 						 	 * we check here whether we should manage
@@ -715,22 +859,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 						 	 */
 							if (ismanageable((HWND)lParam)) {
 								c = manage((HWND)lParam);
-								focus(c);
+								managechildwindows(c);
+								setselected(c);
 								arrange();
-							} else
-								SetForegroundWindow((HWND)lParam);
-						}
-						break;
-					case HSHELL_GETMINRECT:
-						debug("min/max event\n");
-						c = getclient(((SHELLHOOKINFO*)lParam)->hwnd);
-						if (c) {
-							WINDOWPLACEMENT winplace;
-							winplace.length = sizeof(WINDOWPLACEMENT);
-							if (GetWindowPlacement(c->hwnd, &winplace)) 
-								c->isminimized = (winplace.showCmd == SW_SHOWMINIMIZED);
-							debug(" window state changed: %s\n", c->isminimized ? "minimized" : "maximized");
-							arrange();						
+							}
 						}
 						break;
 				}
@@ -743,13 +875,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 BOOL CALLBACK 
 scan(HWND hwnd, LPARAM lParam) {
-	if (ismanageable(hwnd))
+	Client *c = getclient(hwnd);
+	if (c)
+		c->isalive = true;
+	else if (ismanageable(hwnd))
 		manage(hwnd);
 	return TRUE;
 }
 
 void
 drawborder(Client *c, COLORREF color) {
+#if 0
 	HDC hdc = GetWindowDC(c->hwnd);
 
 #if 0
@@ -766,20 +902,26 @@ drawborder(Client *c, COLORREF color) {
 	LineTo(hdc, 0, 0);
 	DeleteObject(pen);
 #endif
+
 	ReleaseDC(c->hwnd, hdc);
+#endif
 }
 
 void
 setborder(Client *c, bool border) {
 	if (border) {
 		SetWindowLong(c->hwnd, GWL_STYLE, (GetWindowLong(c->hwnd, GWL_STYLE) | (WS_CAPTION | WS_SIZEBOX)));
-		SetWindowPos(c->hwnd, 0, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER); /* XXX: needed */
-	} else {
-		SetWindowLong(c->hwnd, GWL_STYLE, (GetWindowLong(c->hwnd, GWL_STYLE) & ~(WS_CAPTION | WS_SIZEBOX)));
+	} else {		
+		/* XXX: ideally i would like to use the standard window border facilities and just modify the 
+		 *      color with SetSysColor but this only seems to work if we leave WS_SIZEBOX enabled which
+		 *      is not optimal.
+		 */
+		SetWindowLong(c->hwnd, GWL_STYLE, (GetWindowLong(c->hwnd, GWL_STYLE) & ~(WS_CAPTION | WS_SIZEBOX)) | WS_BORDER | WS_THICKFRAME);
+		SetWindowLong(c->hwnd, GWL_EXSTYLE, (GetWindowLong(c->hwnd, GWL_EXSTYLE) & ~(WS_EX_CLIENTEDGE | WS_EX_WINDOWEDGE)));
 	}
+	SetWindowPos(c->hwnd, 0, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER );
 	c->border = border;
 }
-
 
 void
 setvisibility(HWND hwnd, bool visibility) {
@@ -815,6 +957,8 @@ setmfact(const Arg *arg) {
 void
 setup(HINSTANCE hInstance) {
 
+	unsigned int i;
+
 	lt[0] = &layouts[0];
 	lt[1] = &layouts[1 % LENGTH(layouts)];
 
@@ -826,6 +970,14 @@ setup(HINSTANCE hInstance) {
 	dc.sel[ColBorder] = selbordercolor;
 	dc.sel[ColBG] = selbgcolor;
 	dc.sel[ColFG] = selfgcolor;
+
+	/* save colors so we can restore them in cleanup */
+	for (i = 0; i < LENGTH(colorwinelements); i++)
+		colors[0][i] = GetSysColor(colorwinelements[i]);
+	
+	SetSysColors(LENGTH(colorwinelements), colorwinelements, colors[1]); 
+	
+	//SystemParametersInfo(SPI_SETBORDER, 1 /* width */, 0, 0);
 
 	updategeom();
 
@@ -850,7 +1002,7 @@ setup(HINSTANCE hInstance) {
 	dwmhwnd = CreateWindowEx(0, NAME, NAME, 0, 0, 0, 0, 0, HWND_MESSAGE, NULL, hInstance, NULL);
 
 	if (!dwmhwnd)
-		die("Error Creating Window");
+		die("Error creating window");
 
 	grabkeys(dwmhwnd);
 
@@ -928,12 +1080,18 @@ void
 showhide(Client *c) {
 	if(!c)
 		return;
-	if (!ISVISIBLE(c))
-		c->ignore = true;
-	/* XXX: is the order of showing / hidding important?
-	 *      if so then use recursion like dwm does
-	 */
-	setvisibility(c->hwnd, ISVISIBLE(c));
+	/* XXX: is the order of showing / hidding important? */
+	if (!ISVISIBLE(c)) {
+		if (IsWindowVisible(c->hwnd)) {
+			c->ignore = true;
+			c->wasvisible = true;
+			setvisibility(c->hwnd, false);
+		}
+	} else {
+		if (c->wasvisible) {
+			setvisibility(c->hwnd, true);
+		}
+	}
 	showhide(c->snext);
 }
 
@@ -944,8 +1102,17 @@ spawn(const Arg *arg) {
 
 void
 tag(const Arg *arg) {
+	Client *c;
+
 	if(sel && arg->ui & TAGMASK) {
 		sel->tags = arg->ui & TAGMASK;
+		debug("window tagged: %d %s\n", sel->hwnd, getclienttitle(sel->hwnd));
+		for (c = managechildwindows(sel); c; c = nextchild(sel, c->next)) {
+			debug(" child window which is %s tagged: %s\n", c->isfloating ? "floating" : "normal", getclienttitle(c->hwnd));
+			if (c->isfloating)
+				c->tags = arg->ui & TAGMASK;
+		}
+		debug("window tagged finished\n");
 		arrange();
 	}
 }
@@ -1064,7 +1231,10 @@ toggleview(const Arg *arg) {
 void
 unmanage(Client *c) {
 	debug(" unmanage %s\n", getclienttitle(c->hwnd));
-	setborder(c, true);
+	if (c->wasvisible)
+		setvisibility(c->hwnd, true);
+	if (!c->isfloating)
+		setborder(c, true);
 	detach(c);
 	detachstack(c);
 	if(sel == c)
@@ -1075,9 +1245,7 @@ unmanage(Client *c) {
 
 void
 updatebar(void) {
-	//debug("updatebar: %s  x: %d y: %d w: %d h: %d\n", showbar ? "show" : "hide" , 0, by, ww, bh);
 	SetWindowPos(barhwnd, showbar ? HWND_TOPMOST : HWND_NOTOPMOST, 0, by, ww, bh, (showbar ? SWP_SHOWWINDOW : SWP_HIDEWINDOW) | SWP_NOACTIVATE | SWP_NOSENDCHANGING);
-	
 }
 
 void
@@ -1110,11 +1278,6 @@ updategeom(void) {
 	/* bar position */
 	by = showbar ? (topbar ? wy - bh : wy + wh) : -bh;
 	debug("updategeom: %d x %d\n", ww, wh);
-}
-
-void
-updatestatus() {
-	drawbar();
 }
 
 void

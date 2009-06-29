@@ -1,12 +1,12 @@
 /* See LICENSE file for copyright and license details. */
 
-/* appearance */
-static const COLORREF normbordercolor = RGB(204, 204, 204);
-static const COLORREF normbgcolor     = RGB(204, 204, 204);
-static const COLORREF normfgcolor     = RGB(0,0,0);
-static const COLORREF selbordercolor  = RGB(0,102,255);
-static const COLORREF selbgcolor      = RGB(0,102,255);
-static const COLORREF selfgcolor      = RGB(255,255,255);
+/* appearance, colors are specified in the form 0x00bbggrr or with the RGB(r, g, b) macro */
+#define normbordercolor 0x00cccccc
+#define normbgcolor     0x00cccccc
+#define normfgcolor     0x00000000
+#define selbordercolor  0x00ff6600
+#define selbgcolor      0x00ff6600
+#define selfgcolor      0x00ffffff
 
 static const unsigned int borderpx    = 2;        /* border pixel of windows */
 static const unsigned int textmargin  = 5;        /* margin for the text displayed on the bar */
@@ -47,39 +47,38 @@ static Layout layouts[] = {
 static const char *termcmd[]  = { "cmd.exe", NULL };
 
 static Key keys[] = {
-	/* modifier                     key        function        argument */
-	{ MODKEY,                       'P',       spawn,          {.v = termcmd } },
-	{ MODKEY|MOD_SHIFT,             VK_RETURN, spawn,          {.v = termcmd } },
-	{ MODKEY,                       'B',       togglebar,      {0} },
-	{ MODKEY,                       'J',       focusstack,     {.i = +1 } },
-	{ MODKEY,                       'K',       focusstack,     {.i = -1 } },
-	{ MODKEY,                       'H',       setmfact,       {.f = -0.05} },
-	{ MODKEY,                       'L',       setmfact,       {.f = +0.05} },
-	{ MODKEY,                       'I',       showclientclassname,  {0} },
-	{ MODKEY,                       VK_RETURN, zoom,           {0} },
-	{ MODKEY,                       VK_TAB,    view,           {0} },
-	{ MODKEY|MOD_SHIFT,             'C',       killclient,     {0} },
-	{ MODKEY,                       'T',       setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       'F',       setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       'M',       setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       VK_SPACE,  setlayout,      {0} },
-	{ MODKEY|MOD_SHIFT,             VK_SPACE,  togglefloating, {0} },
-	{ MODKEY,                       'N',       toggleborder,   {0} },
-	{ MODKEY,                       'E',       toggleexplorer, {0} },
-
-	{ MODKEY,                       '0',       view,           {.ui = ~0 } },
-	{ MODKEY|MOD_SHIFT,             '0',       tag,            {.ui = ~0 } },
-	TAGKEYS(                        '1',                       0)
-	TAGKEYS(                        '2',                       1)
-	TAGKEYS(                        '3',                       2)
-	TAGKEYS(                        '4',                       3)
-	TAGKEYS(                        '5',                       4)
-	TAGKEYS(                        '6',                       5)
-	TAGKEYS(                        '7',                       6)
-	TAGKEYS(                        '8',                       7)
-	TAGKEYS(                        '9',                       8)
-	{ MODKEY,                       'Q',       quit,           {0} },
+	/* modifier                     key        function             argument */
+	{ MODKEY|MOD_SHIFT,             VK_RETURN, spawn,               {.v = termcmd } },
+	{ MODKEY,                       'B',       togglebar,           {0} },
+	{ MODKEY,                       'J',       focusstack,          {.i = +1 } },
+	{ MODKEY,                       'K',       focusstack,          {.i = -1 } },
+	{ MODKEY,                       'H',       setmfact,            {.f = -0.05} },
+	{ MODKEY,                       'L',       setmfact,            {.f = +0.05} },
+	{ MODKEY,                       'I',       showclientclassname, {0} },
+	{ MODKEY,                       VK_RETURN, zoom,                {0} },
+	{ MODKEY,                       VK_TAB,    view,                {0} },
+	{ MODKEY|MOD_SHIFT,             'C',       killclient,          {0} },
+	{ MODKEY,                       'T',       setlayout,           {.v = &layouts[0]} },
+	{ MODKEY,                       'F',       setlayout,           {.v = &layouts[1]} },
+	{ MODKEY,                       'M',       setlayout,           {.v = &layouts[2]} },
+	{ MODKEY,                       VK_SPACE,  setlayout,           {0} },
+	{ MODKEY|MOD_SHIFT,             VK_SPACE,  togglefloating,      {0} },
+	{ MODKEY,                       'N',       toggleborder,        {0} },
+	{ MODKEY,                       'E',       toggleexplorer,      {0} },
+	{ MODKEY,                       '0',       view,                {.ui = ~0 } },
+	{ MODKEY|MOD_SHIFT,             '0',       tag,                 {.ui = ~0 } },
+	TAGKEYS(                        '1',                            0)
+	TAGKEYS(                        '2',                            1)
+	TAGKEYS(                        '3',                            2)
+	TAGKEYS(                        '4',                            3)
+	TAGKEYS(                        '5',                            4)
+	TAGKEYS(                        '6',                            5)
+	TAGKEYS(                        '7',                            6)
+	TAGKEYS(                        '8',                            7)
+	TAGKEYS(                        '9',                            8)
+	{ MODKEY,                       'Q',       quit,                {0} },
 };
+
 
 /* button definitions */
 /* click can be a tag number (starting at 0), ClkLtSymbol, ClkStatusText or ClkWinTitle */
@@ -92,8 +91,8 @@ static Button buttons[] = {
 #if 0
 	{ ClkClientWin,         WM_MBUTTONDOWN,       MODKEY,          togglefloating, {0} },
 #endif
+	{ ClkTagBar,            WM_LBUTTONDOWN,       VK_MENU,         tag,            {0} },
+	{ ClkTagBar,            WM_RBUTTONDOWN,       VK_MENU,         toggletag,      {0} },
 	{ ClkTagBar,            WM_LBUTTONDOWN,       0,               view,           {0} },
 	{ ClkTagBar,            WM_RBUTTONDOWN,       0,               toggleview,     {0} },
-	{ ClkTagBar,            WM_LBUTTONDOWN,       MODKEY,          tag,            {0} },
-	{ ClkTagBar,            WM_RBUTTONDOWN,       MODKEY,          toggletag,      {0} },
 };

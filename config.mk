@@ -1,5 +1,5 @@
 # dwm-win32 version
-VERSION = alpha1
+VERSION = alpha2
 
 # Customize below to fit your system
 
