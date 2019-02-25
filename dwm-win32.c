@@ -168,13 +168,6 @@ static void zoom(const Arg *arg);
 /* Shell hook stuff */
 
 typedef BOOL (*RegisterShellHookWindowProc) (HWND);
-RegisterShellHookWindowProc RegisterShellHookWindow;
-
-/* XXX: should be in a system header, no? */
-typedef struct {
-    HWND    hwnd;
-    RECT    rc;
-} SHELLHOOKINFO, *LPSHELLHOOKINFO;
 
 /* variables */
 static HWND dwmhwnd, barhwnd;
@@ -395,7 +388,7 @@ drawbar(void) {
 }
 
 void
-drawsquare(bool filled, bool empty, bool invert, COLORREF col[ColLast]) {
+drawsquare(bool filled, bool empty, bool invert, unsigned long col[ColLast]) {
 	static int size = 5;
 	RECT r = { .left = dc.x + 1, .top = dc.y + 1, .right = dc.x + size, .bottom = dc.y + size };
 
@@ -411,7 +404,7 @@ drawsquare(bool filled, bool empty, bool invert, COLORREF col[ColLast]) {
 }
 
 void
-drawtext(const char *text, COLORREF col[ColLast], bool invert) {
+drawtext(const char *text, unsigned long col[ColLast], bool invert) {
 	RECT r = { .left = dc.x, .top = dc.y, .right = dc.x + dc.w, .bottom = dc.y + dc.h };
 
 	HPEN pen = CreatePen(PS_SOLID, borderpx, selbordercolor);
@@ -1012,10 +1005,6 @@ setup(HINSTANCE hInstance) {
 
 	arrange();
 	
-	/* Get function pointer for RegisterShellHookWindow */
-	RegisterShellHookWindow = (RegisterShellHookWindowProc)GetProcAddress(GetModuleHandle("USER32.DLL"), "RegisterShellHookWindow");
-	if (!RegisterShellHookWindow)
-		die("Could not find RegisterShellHookWindow");
 	RegisterShellHookWindow(dwmhwnd);
 	/* Grab a dynamic id for the SHELLHOOK message to be used later */
 	shellhookid = RegisterWindowMessage("SHELLHOOK");
