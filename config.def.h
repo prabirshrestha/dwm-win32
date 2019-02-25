@@ -13,6 +13,7 @@ static const unsigned int borderpx    = 0;        /* border pixel of windows */
 static const unsigned int textmargin  = 5;        /* margin for the text displayed on the bar */
 static bool showbar                   = true;     /* false means no bar */
 static bool topbar                    = true;     /* false means bottom bar */
+static bool showclock                 = true;     /* false means no clock */
 
 /* tagging */
 static const char tags[][MAXTAGLEN] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
@@ -40,6 +41,9 @@ static Layout layouts[] = {
 	{ MODKEY|MOD_CONTROL,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
 	{ MODKEY|MOD_SHIFT,             KEY,      tag,            {.ui = 1 << TAG} }, \
 	{ MODKEY|MOD_CONTROL|MOD_SHIFT, KEY,      toggletag,      {.ui = 1 << TAG} },
+
+static char clockfmt[] = "%Y/%m/%d(%a) %H:%M";
+static int clock_interval = 15000;
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
