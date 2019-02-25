@@ -1,14 +1,15 @@
 /* See LICENSE file for copyright and license details. */
+#define NDEBUG 1
 
 /* appearance, colors are specified in the form 0x00bbggrr or with the RGB(r, g, b) macro */
-#define normbordercolor 0x00cccccc
-#define normbgcolor     0x00cccccc
-#define normfgcolor     0x00000000
-#define selbordercolor  0x00ff6600
-#define selbgcolor      0x00ff6600
-#define selfgcolor      0x00ffffff
+#define normbordercolor 0x00444444
+#define normbgcolor     0x00333333
+#define normfgcolor     0x00bbbbbb
+#define selbordercolor  0x00005577
+#define selbgcolor      0x00333333
+#define selfgcolor      0x003300ff
 
-static const unsigned int borderpx    = 2;        /* border pixel of windows */
+static const unsigned int borderpx    = 0;        /* border pixel of windows */
 static const unsigned int textmargin  = 5;        /* margin for the text displayed on the bar */
 static bool showbar                   = true;     /* false means no bar */
 static bool topbar                    = true;     /* false means bottom bar */
