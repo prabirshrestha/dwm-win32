@@ -302,6 +302,11 @@ cleanup() {
 	SetSysColors(LENGTH(colorwinelements), colorwinelements, colors[0]); 
 
 	DestroyWindow(dwmhwnd);
+
+    HWND hwnd;
+    hwnd = FindWindow("Shell_TrayWnd", NULL);
+	if (hwnd)
+		setvisibility(hwnd, TRUE);
 }
 
 void
