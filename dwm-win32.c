@@ -994,6 +994,10 @@ setup(HINSTANCE hInstance) {
 	
 	//SystemParametersInfo(SPI_SETBORDER, 1 /* width */, 0, 0);
 
+	HWND hwnd = FindWindow("Shell_TrayWnd", NULL);
+	if (hwnd)
+		setvisibility(hwnd, showexploreronstart);
+
 	updategeom();
 
 	WNDCLASSEX winClass;
