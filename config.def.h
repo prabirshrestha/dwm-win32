@@ -21,9 +21,9 @@ static const char tags[][MAXTAGLEN] = { "1", "2", "3", "4", "5", "6", "7", "8", 
 static unsigned int tagset[] = {1, 1}; /* after start, first tag is selected */
 
 static Rule rules[] = {
-	/* class                   title                      tags mask     isfloating */
-	{ "MozillaUIWindowClass",  "- Mozilla Firefox",       1 << 1,       false },
-	{ "Chrome_WidgetWin_1",    "- Google Chrome",         1 << 1,       false },
+	/* class                   title                      tags mask     isfloating      ignoreborder */
+	{ "MozillaUIWindowClass",  "- Mozilla Firefox",       1 << 1,       false,          true },
+	{ "Chrome_WidgetWin_1",    "- Google Chrome",         1 << 1,       false,          true },
 };
 
 /* layout(s) */

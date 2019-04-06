@@ -85,6 +85,7 @@ struct Client {
 	bool isfloating;
 	bool isalive;
 	bool ignore;
+	bool ignoreborder;
 	bool border;
 	bool wasvisible;
 	bool isfixed, isurgent; // XXX: useless?
@@ -109,6 +110,7 @@ typedef struct {
 	const char *title;
 	unsigned int tags;
 	bool isfloating;
+	bool ignoreborder;
 } Rule;
 
 /* function declarations */
@@ -211,6 +213,7 @@ applyrules(Client *c) {
 		if((!r->title || strstr(getclienttitle(c->hwnd), r->title))
 		&& (!r->class || strstr(getclientclassname(c->hwnd), r->class))) {
 			c->isfloating = r->isfloating;
+            c->ignoreborder = r->ignoreborder;
 			c->tags |= r->tags & TAGMASK ? r->tags & TAGMASK : tagset[seltags]; 
 		}
 	}
@@ -924,18 +927,20 @@ drawborder(Client *c, COLORREF color) {
 
 void
 setborder(Client *c, bool border) {
-	if (border) {
-		SetWindowLong(c->hwnd, GWL_STYLE, (GetWindowLong(c->hwnd, GWL_STYLE) | (WS_CAPTION | WS_SIZEBOX)));
-	} else {		
-		/* XXX: ideally i would like to use the standard window border facilities and just modify the 
-		 *      color with SetSysColor but this only seems to work if we leave WS_SIZEBOX enabled which
-		 *      is not optimal.
-		 */
-		SetWindowLong(c->hwnd, GWL_STYLE, (GetWindowLong(c->hwnd, GWL_STYLE) & ~(WS_CAPTION | WS_SIZEBOX)) | WS_BORDER | WS_THICKFRAME);
-		SetWindowLong(c->hwnd, GWL_EXSTYLE, (GetWindowLong(c->hwnd, GWL_EXSTYLE) & ~(WS_EX_CLIENTEDGE | WS_EX_WINDOWEDGE)));
+	if (!c->ignoreborder) {
+		if (border) {
+			SetWindowLong(c->hwnd, GWL_STYLE, (GetWindowLong(c->hwnd, GWL_STYLE) | (WS_CAPTION | WS_SIZEBOX)));
+		} else {
+			/* XXX: ideally i would like to use the standard window border facilities and just modify the 
+			 *      color with SetSysColor but this only seems to work if we leave WS_SIZEBOX enabled which
+			 *      is not optimal.
+			 */
+			SetWindowLong(c->hwnd, GWL_STYLE, (GetWindowLong(c->hwnd, GWL_STYLE) & ~(WS_CAPTION | WS_SIZEBOX)) | WS_BORDER | WS_THICKFRAME);
+			SetWindowLong(c->hwnd, GWL_EXSTYLE, (GetWindowLong(c->hwnd, GWL_EXSTYLE) & ~(WS_EX_CLIENTEDGE | WS_EX_WINDOWEDGE)));
+		}
+		SetWindowPos(c->hwnd, 0, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER );
+		c->border = border;
 	}
-	SetWindowPos(c->hwnd, 0, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER );
-	c->border = border;
 }
 
 void
