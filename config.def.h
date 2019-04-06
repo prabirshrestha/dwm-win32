@@ -22,8 +22,9 @@ static unsigned int tagset[] = {1, 1}; /* after start, first tag is selected */
 
 static Rule rules[] = {
 	/* class                   title                      tags mask     isfloating      ignoreborder */
-	{ "MozillaUIWindowClass",  "- Mozilla Firefox",       1 << 1,       false,          true },
-	{ "Chrome_WidgetWin_1",    "- Google Chrome",         1 << 1,       false,          true },
+	{ "MozillaUIWindowClass",  "- Mozilla Firefox",         1 << 1,       false,          true },
+	{ "MozillaWindowClass",    "Firefox Developer Edition", 1 << 1,       false,          true },
+	{ "Chrome_WidgetWin_1",    "- Google Chrome",           1 << 1,       false,          true },
 };
 
 /* layout(s) */
