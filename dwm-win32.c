@@ -20,9 +20,11 @@
 #pragma comment(lib, "gdi32.lib")
 #pragma comment(lib, "shell32.lib")
 #pragma comment(lib, "user32.lib")
+#pragma comment(lib, "dwmapi.lib")
 #endif
 
 #include <windows.h>
+#include <dwmapi.h>
 #include <winuser.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -588,6 +590,16 @@ grabkeys(HWND hwnd) {
 }
 
 bool
+IsInvisibleWin10BackgroundAppWindow(HWND hWnd) {
+	int CloakedVal;
+	HRESULT hRes = DwmGetWindowAttribute(hWnd, DWMWA_CLOAKED, &CloakedVal, sizeof(CloakedVal));
+	if (hRes != S_OK) {
+		CloakedVal = 0;
+	}
+	return CloakedVal ? true : false;
+}
+
+bool
 ismanageable(HWND hwnd){
 	if (getclient(hwnd))
 		return true;
@@ -599,6 +611,13 @@ ismanageable(HWND hwnd){
 	bool pok = (parent != 0 && ismanageable(parent));
 	bool istool = exstyle & WS_EX_TOOLWINDOW;
 	bool isapp = exstyle & WS_EX_APPWINDOW;
+
+	if(IsInvisibleWin10BackgroundAppWindow(hwnd)) {
+		// ignore all win apps for now
+		debug("  IsInvisibleWin10BackgroundAppWindow: true\n");
+		debug("  manage: false\n");
+		return false;
+	}
 
 	if (pok && !getclient(parent))
 		manage(parent);
