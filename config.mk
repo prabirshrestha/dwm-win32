@@ -1,16 +1,12 @@
 # dwm-win32 version
 VERSION = alpha2
 
-# Customize below to fit your system
+CFLAGS = -target x86_64-windows-msvc -std=c99 -pedantic -Wall -Os -DVERSION=\"${VERSION}\"
+LDFLAGS = -target x86_64-windows-msvc
 
-# paths
-PREFIX = /usr/local
-MANPREFIX = ${PREFIX}/share/man
-
-# flags
-CPPFLAGS = -DVERSION=\"${VERSION}\"
-CFLAGS = -std=c99 -pedantic -Wall -Os ${CPPFLAGS}
-LDFLAGS = -s -mwindows
+ifeq ($(OS),Windows_NT)
+	EXE=.exe
+endif
 
 # compiler and linker
-CC = gcc
+CC = clang

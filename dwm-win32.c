@@ -16,6 +16,12 @@
 #define WIN32_LEAN_AND_MEAN
 #define _WIN32_WINNT			0x0500
 
+#if _MSC_VER
+#pragma comment(lib, "gdi32.lib")
+#pragma comment(lib, "shell32.lib")
+#pragma comment(lib, "user32.lib")
+#endif
+
 #include <windows.h>
 #include <winuser.h>
 #include <stdlib.h>
