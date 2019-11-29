@@ -176,6 +176,7 @@ static void updatebar(void);
 static void updategeom(void);
 static void view(const Arg *arg);
 static void zoom(const Arg *arg);
+static bool iscloaked(HWND hWnd);
 
 /* Shell hook stuff */
 
@@ -592,7 +593,7 @@ grabkeys(HWND hwnd) {
 }
 
 bool
-IsInvisibleWin10BackgroundAppWindow(HWND hWnd) {
+iscloaked(HWND hWnd) {
     int CloakedVal;
     HRESULT hRes = DwmGetWindowAttribute(hWnd, DWMWA_CLOAKED, &CloakedVal, sizeof(CloakedVal));
     if (hRes != S_OK) {
@@ -615,9 +616,9 @@ ismanageable(HWND hwnd){
     bool isapp = exstyle & WS_EX_APPWINDOW;
     bool noactiviate = exstyle & WS_EX_NOACTIVATE;
 
-    if(IsInvisibleWin10BackgroundAppWindow(hwnd)) {
+    if(iscloaked(hwnd)) {
         // ignore all win apps for now
-        debug("  IsInvisibleWin10BackgroundAppWindow: true\n");
+        debug("  iscloaked: true\n");
         debug("  manage: false\n");
         return false;
     }
