@@ -32,6 +32,6 @@ ${TARGET_EXEC}: ${OBJS}
 
 clean:
 	@echo cleaning
-	@rm -f dwmjs.exe ${OBJS}
+	@rm -f ${OBJS} config.h ${TARGET_EXEC}
 
 .PHONY: all options clean
