@@ -14,7 +14,7 @@
  */
 
 #define WIN32_LEAN_AND_MEAN
-#define _WIN32_WINNT            0x0500
+#define _WIN32_WINNT            0x0600
 
 #if _MSC_VER
 #pragma comment(lib, "gdi32.lib")
@@ -86,6 +86,8 @@ struct Client {
     HWND parent;
     HWND root;
     DWORD threadid;
+    DWORD processid;
+    const char *processname;
     int x, y, w, h;
     int bw; // XXX: useless?
     unsigned int tags;
@@ -718,6 +720,17 @@ manage(HWND hwnd) {
     c->parent = GetParent(hwnd);
     c->root = getroot(hwnd);
     c->isalive = true;
+    c->processname = "";
+
+    GetWindowThreadProcessId(hwnd, &c->processid);
+    HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, c->processid);
+    if (hProc) {
+        DWORD buf_size = MAX_PATH;
+        TCHAR buf[MAX_PATH];
+        if (QueryFullProcessImageName(hProc, 0, buf, &buf_size)) {
+            c->processname = buf;
+        }
+    }
 
     static WINDOWPLACEMENT wp = {
         .length = sizeof(WINDOWPLACEMENT),
@@ -839,6 +852,8 @@ LRESULT CALLBACK barhandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
     return 0;
 }
+
+
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
