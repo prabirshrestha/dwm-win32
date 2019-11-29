@@ -39,7 +39,7 @@ static Layout layouts[] = {
 };
 
 /* key definitions */
-#define MODKEY 		(MOD_CONTROL | MOD_ALT)
+#define MODKEY 		(MOD_ALT)
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|MOD_CONTROL,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
