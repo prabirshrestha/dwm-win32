@@ -1,6 +1,9 @@
 /* See LICENSE file for copyright and license details. */
 #define NDEBUG 1
 
+static const char *fontname         = "Fira Code";
+static const unsigned int fontsize  = 20;
+
 /* appearance, colors are specified in the form 0x00bbggrr or with the RGB(r, g, b) macro */
 #define normbordercolor 0x00444444
 #define normbgcolor     0x00333333
