@@ -6,11 +6,11 @@ static const unsigned int fontsize  = 20;
 
 /* appearance, colors are specified in the form 0x00bbggrr or with the RGB(r, g, b) macro */
 #define normbordercolor 0x00444444
-#define normbgcolor     0x00333333
+#define normbgcolor     0x00222222
 #define normfgcolor     0x00bbbbbb
-#define selbordercolor  0x00005577
-#define selbgcolor      0x00333333
-#define selfgcolor      0x003300ff
+#define selbordercolor  0x00775500
+#define selbgcolor      0x00775500
+#define selfgcolor      0x00eeeeee
 
 static const unsigned int borderpx    = 0;        /* border pixel of windows */
 static const unsigned int textmargin  = 5;        /* margin for the text displayed on the bar */
