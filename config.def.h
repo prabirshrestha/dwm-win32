@@ -25,6 +25,7 @@ static Rule rules[] = {
 	{ "MozillaUIWindowClass",  "- Mozilla Firefox",         1 << 1,       false,          true },
 	{ "MozillaWindowClass",    "Firefox Developer Edition", 1 << 1,       false,          true },
 	{ "Chrome_WidgetWin_1",    "- Google Chrome",           1 << 1,       false,          true },
+    { "Microsoft-Windows-SnipperToolbar", "Snipping Tool",	0,		      true,           true },
 };
 
 /* layout(s) */
