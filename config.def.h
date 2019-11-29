@@ -25,9 +25,6 @@ static unsigned int tagset[] = {1, 1}; /* after start, first tag is selected */
 
 static Rule rules[] = {
 	/* class                   title                      tags mask     isfloating      ignoreborder */
-	{ "MozillaUIWindowClass",  "- Mozilla Firefox",         0,          false,          true },
-	{ "MozillaWindowClass",    "Firefox Developer Edition", 0,          false,          true },
-	{ "Chrome_WidgetWin_1",    "- Google Chrome",           0,          false,          true },
     { "Microsoft-Windows-SnipperToolbar", "Snipping Tool",	0,		    true,           true },
 };
 
