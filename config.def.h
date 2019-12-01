@@ -26,6 +26,7 @@ static unsigned int tagset[] = {1, 1}; /* after start, first tag is selected */
 static Rule rules[] = {
     /* class                                title                       tags mask   isfloating      ignoreborder */
     { "Progman",                            NULL,                       0,          true,           true },
+    { "MultitaskingViewFrame",              NULL,                       0,          true,           true },
     { "Microsoft-Windows-SnipperToolbar",   "Snipping Tool",            0,          true,           true },
     { "Chrome_WidgetWin_1",                 "- Google Chrome",          0,          false,          true },
 };
