@@ -36,7 +36,7 @@ Usage
 
  Keyboard
 
-  dwm uses a modifier key by default this is CTRL + ALT.
+  dwm uses a modifier key by default this is `ALT`.
 
   MOD + Shift + Return
    - start cmd.exe.
