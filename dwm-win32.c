@@ -99,6 +99,7 @@ struct Client {
     bool border;
     bool wasvisible;
     bool isfixed, isurgent; // XXX: useless?
+    bool iscloaked; // WinStore apps
     Client *next;
     Client *snext;
 };
@@ -618,13 +619,6 @@ ismanageable(HWND hwnd){
     bool isapp = exstyle & WS_EX_APPWINDOW;
     bool noactiviate = exstyle & WS_EX_NOACTIVATE;
 
-    if(iscloaked(hwnd)) {
-        // ignore all win apps for now
-        debug("  iscloaked: true\n");
-        debug("  manage: false\n");
-        return false;
-    }
-
     if (pok && !getclient(parent))
         manage(parent);
 
@@ -721,6 +715,7 @@ manage(HWND hwnd) {
     c->root = getroot(hwnd);
     c->isalive = true;
     c->processname = "";
+    c->iscloaked = iscloaked(hwnd);
 
     GetWindowThreadProcessId(hwnd, &c->processid);
     HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, c->processid);
@@ -738,13 +733,14 @@ manage(HWND hwnd) {
         .showCmd = SW_RESTORE,
     };
 
-    if (IsWindowVisible(c->hwnd))
+    if (IsWindowVisible(hwnd))
         SetWindowPlacement(hwnd, &wp);
     
     /* maybe we could also filter based on 
      * WS_MINIMIZEBOX and WS_MAXIMIZEBOX
      */
-    c->isfloating = (wi.dwStyle & WS_POPUP) || 
+    c->isfloating = 
+        (!c->iscloaked && (wi.dwStyle & WS_POPUP)) || /* WinStore apps are WS_POPUP so tile them */
         (!(wi.dwStyle & WS_MINIMIZEBOX) && !(wi.dwStyle & WS_MAXIMIZEBOX));
 
     debug(" window style: %d\n", wi.dwStyle);
