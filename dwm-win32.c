@@ -730,6 +730,7 @@ manage(HWND hwnd) {
         if (QueryFullProcessImageName(hProc, 0, buf, &buf_size)) {
             c->processname = buf;
         }
+        CloseHandle(hProc);
     }
 
     static WINDOWPLACEMENT wp = {
