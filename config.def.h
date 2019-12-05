@@ -29,9 +29,11 @@ static Rule rules[] = {
     { "MultitaskingViewFrame",              NULL,                                   0,          true,           true },
     { "Microsoft-Windows-SnipperToolbar",   "Snipping Tool",                        0,          true,           true },
     { "Microsoft Text Input Application",   NULL,                                   0,          true,           true },
-    { NULL,                                 "MSO_BORDEREFFECT_WINDOW_CLASS",        0,          true,           true }, /* onenote */
+    { "MSO_BORDEREFFECT_WINDOW_CLASS",      NULL,                                   0,          true,           true }, /* onenote */
+    { "ThumbnailDeviceHelperWnd",           NULL,                                   0,          true,           true }, /* onenote */
+    { "EdgeUiInputTopWndClass",             NULL,                                   0,          true,           true }, /* onenote */
     { NULL,                                 "Snip & Sketch",                        0,          true,           true },
-    { "Chrome_WidgetWin_1",                 "- Google Chrome",                      0,          false,          true },
+    { "Chrome_WidgetWin_1",                 "Google Chrome",                      0,          false,          true },
 };
 
 /* layout(s) */
