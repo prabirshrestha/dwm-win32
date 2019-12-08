@@ -1257,7 +1257,6 @@ toggleexplorer(const Arg *arg) {
     if (hwnd)
         setvisibility(hwnd, !IsWindowVisible(hwnd));
 
-    
     updategeom();
     updatebar();
     arrange();        

@@ -54,7 +54,7 @@ static Layout layouts[] = {
     { MODKEY|MOD_SHIFT,             KEY,      tag,            {.ui = 1 << TAG} }, \
     { MODKEY|MOD_CONTROL|MOD_SHIFT, KEY,      toggletag,      {.ui = 1 << TAG} },
 
-static char clockfmt[] = "%Y/%m/%d(%a) %H:%M";
+static char clockfmt[] = "%m/%d/%Y %a %H:%M";
 static int clock_interval = 15000;
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
