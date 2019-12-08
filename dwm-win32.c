@@ -293,6 +293,9 @@ cleanup() {
     int i;
     Arg a = {.ui = ~0};
     Layout foo = { "", NULL };
+
+    if (barhwnd)
+        KillTimer(barhwnd, 1);
     
     for(i = 0; i < LENGTH(keys); i++) {
         UnregisterHotKey(dwmhwnd, i);
