@@ -559,14 +559,14 @@ getclient(HWND hwnd) {
 
 LPSTR
 getclientclassname(HWND hwnd) {
-    static TCHAR buf[128];
+    static TCHAR buf[500];
     GetClassName(hwnd, buf, sizeof buf);
     return buf;
 }
 
 LPSTR
 getclienttitle(HWND hwnd) {
-    static TCHAR buf[128];
+    static TCHAR buf[500];
     GetWindowText(hwnd, buf, sizeof buf);
     return buf;
 }
@@ -702,7 +702,7 @@ manage(HWND hwnd) {
     if (!GetWindowInfo(hwnd, &wi))
         return NULL;
 
-    if(!(c = malloc(sizeof(Client))))
+    if(!(c = calloc(1, sizeof(Client))))
         die("fatal: could not malloc() %u bytes\n", sizeof(Client));
 
     *c = cz;
@@ -778,7 +778,7 @@ nextchild(Client *p, Client *c) {
 
 Client *
 nexttiled(Client *c) {
-    for(; c && (c->isfloating || IsIconic(c->hwnd) || !ISVISIBLE(c) || !IsWindowVisible(c->hwnd)); c = c->next);
+    for(; c && (c->isfloating || !ISVISIBLE(c)); c = c->next);
     return c;
 }
 
