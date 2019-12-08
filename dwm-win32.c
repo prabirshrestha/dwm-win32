@@ -254,15 +254,6 @@ attachstack(Client *c) {
     stack = c;
 }
 
-bool
-istoolwindowof(Client *p, Client *c) {
-    debug(" istoolwindowof: %s\n", getclienttitle(p->hwnd));
-    debug("       floating: %d\n", c->isfloating);
-    debug("           root: %d == %d\n", p->root, c->root);
-    debug("       threadid: %d == %d\n", p->threadid, c->threadid);
-    return c->isfloating && (p->root == c->root || p->threadid == c->threadid);
-}
-
 void
 buttonpress(unsigned int button, POINTS *point) {
     unsigned int i, x, click;
