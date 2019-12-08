@@ -10,7 +10,7 @@
  *
  * Keys and tagging rules are organized as arrays and defined in config.h.
  *
- * To understand everything else, start reading main().
+ * To understand everything else, start reading WinMain().
  */
 
 #define WIN32_LEAN_AND_MEAN
