@@ -1048,8 +1048,6 @@ setup(HINSTANCE hInstance) {
     if (hwnd)
         setvisibility(hwnd, showexploreronstart);
 
-    updategeom();
-
     WNDCLASSEX winClass;
 
     winClass.cbSize = sizeof(WNDCLASSEX);
@@ -1073,17 +1071,25 @@ setup(HINSTANCE hInstance) {
     if (!dwmhwnd)
         die("Error creating window");
 
-    grabkeys(dwmhwnd);
+    updategeom();
 
     EnumWindows(scan, 0);
 
     setupbar(hInstance);
 
+    grabkeys(dwmhwnd);
+
     arrange();
     
-    RegisterShellHookWindow(dwmhwnd);
+    if (!RegisterShellHookWindow(dwmhwnd))
+        die("Could not RegisterShellHookWindow");
+
     /* Grab a dynamic id for the SHELLHOOK message to be used later */
     shellhookid = RegisterWindowMessage("SHELLHOOK");
+
+    updatebar();
+
+    focus(NULL);
 }
 
 void
