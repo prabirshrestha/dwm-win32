@@ -63,7 +63,7 @@ static int clock_interval = 15000;
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
-static const char *termcmd[]  = { "cmd.exe", NULL };
+static const char *termcmd[]  = { "wt.exe", NULL };
 
 static Key keys[] = {
     /* modifier                     key        function             argument */
@@ -96,7 +96,7 @@ static Key keys[] = {
     TAGKEYS(                        '7',                            6)
     TAGKEYS(                        '8',                            7)
     TAGKEYS(                        '9',                            8)
-    { MOD_CONTROL | MODKEY,         'Q',       quit,                {0} },
+    { MODKEY|MOD_CONTROL,           'Q',       quit,                {0} },
 };
 
 
