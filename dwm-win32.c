@@ -13,6 +13,7 @@
  * To understand everything else, start reading WinMain().
  */
 
+#include <string.h>
 #define WIN32_LEAN_AND_MEAN
 #define _WIN32_WINNT            0x0600
 
@@ -649,11 +650,20 @@ ismanageable(HWND hwnd){
         return false;
 
     if (strstr(classname, "Windows.UI.Core.CoreWindow") && (
-            strstr(title, "Cortana")  ||
-            strstr(title, "Start") ||
-            strstr(title, "Search"))) {
+        strstr(title, "Cortana")  ||
+        strstr(title, "Start") ||
+        strstr(title, "Search"))) {
         return false;
     }
+
+    if (strstr(classname, "ForegroundStaging") ||
+        strstr(classname, "ApplicationManager_DesktopShellWindow") ||
+        strstr(classname, "Static") ||
+        strstr(classname, "Scrollbar") ||
+        strstr(classname, "Progman")) {
+        return false;
+    }
+
     /*
      *    WS_EX_APPWINDOW
      *        Forces a top-level window onto the taskbar when 
