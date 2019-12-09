@@ -41,11 +41,14 @@ static Rule rules[] = {
 /* layout(s) */
 static float mfact      = 0.55; /* factor of master area size [0.05..0.95] */
 
+#include "bstack.c"
+
 static Layout layouts[] = {
     /* symbol     arrange function */
     { "[]=",      tile },    /* first entry is default */
     { "><>",      NULL },    /* no layout function means floating behavior */
     { "[M]",      monocle },
+    { "TTT",      bstack },
 };
 
 /* key definitions */
@@ -69,7 +72,7 @@ static Key keys[] = {
     /* modifier                     key        function             argument */
     {}, // ??? dummy empty
     { MODKEY|MOD_SHIFT,             VK_RETURN, spawn,               {.v = termcmd } },
-    { MODKEY,                       'B',       togglebar,           {0} },
+    { MODKEY|MOD_CONTROL,           'B',       togglebar,           {0} },
     { MODKEY,                       'J',       focusstack,          {.i = +1 } },
     { MODKEY,                       'K',       focusstack,          {.i = -1 } },
     { MODKEY,                       'H',       setmfact,            {.f = -0.05} },
@@ -81,6 +84,7 @@ static Key keys[] = {
     { MODKEY,                       'T',       setlayout,           {.v = &layouts[0]} },
     { MODKEY,                       'F',       setlayout,           {.v = &layouts[1]} },
     { MODKEY,                       'M',       setlayout,           {.v = &layouts[2]} },
+    { MODKEY,                       'B',       setlayout,           {.v = &layouts[3]} },
     { MODKEY|MOD_CONTROL,           VK_SPACE,  setlayout,           {0} },
     { MODKEY|MOD_SHIFT,             VK_SPACE,  togglefloating,      {0} },
     { MODKEY,                       'N',       toggleborder,        {0} },
