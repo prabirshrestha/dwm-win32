@@ -42,6 +42,7 @@ static Rule rules[] = {
 static float mfact      = 0.55; /* factor of master area size [0.05..0.95] */
 
 #include "bstack.c"
+#include "grid.c"
 
 static Layout layouts[] = {
     /* symbol     arrange function */
@@ -49,6 +50,7 @@ static Layout layouts[] = {
     { "><>",      NULL },    /* no layout function means floating behavior */
     { "[M]",      monocle },
     { "TTT",      bstack },
+    { "+++",      grid },
 };
 
 /* key definitions */
@@ -85,6 +87,7 @@ static Key keys[] = {
     { MODKEY,                       'F',       setlayout,           {.v = &layouts[1]} },
     { MODKEY,                       'M',       setlayout,           {.v = &layouts[2]} },
     { MODKEY,                       'B',       setlayout,           {.v = &layouts[3]} },
+    { MODKEY,                       'G',       setlayout,           {.v = &layouts[4]} },
     { MODKEY|MOD_CONTROL,           VK_SPACE,  setlayout,           {0} },
     { MODKEY|MOD_SHIFT,             VK_SPACE,  togglefloating,      {0} },
     { MODKEY,                       'N',       toggleborder,        {0} },
