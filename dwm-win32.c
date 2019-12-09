@@ -615,6 +615,8 @@ ismanageable(HWND hwnd){
     bool istool = exstyle & WS_EX_TOOLWINDOW;
     bool isapp = exstyle & WS_EX_APPWINDOW;
     bool noactiviate = exstyle & WS_EX_NOACTIVATE;
+    const char *classname = getclientclassname(hwnd);
+    const char *title = getclienttitle(hwnd);
 
     if (pok && !getclient(parent))
         manage(parent);
@@ -646,6 +648,12 @@ ismanageable(HWND hwnd){
     if (noactiviate)
         return false;
 
+    if (strstr(classname, "Windows.UI.Core.CoreWindow") && (
+            strstr(title, "Cortana")  ||
+            strstr(title, "Start") ||
+            strstr(title, "Search"))) {
+        return false;
+    }
     /*
      *    WS_EX_APPWINDOW
      *        Forces a top-level window onto the taskbar when 
