@@ -13,7 +13,6 @@
  * To understand everything else, start reading WinMain().
  */
 
-#include <string.h>
 #define WIN32_LEAN_AND_MEAN
 #define _WIN32_WINNT            0x0600
 
@@ -29,6 +28,7 @@
 #include <winuser.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <shellapi.h>
 #include <stdbool.h>
 #include <time.h>
