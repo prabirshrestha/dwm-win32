@@ -67,7 +67,7 @@ static const char *termcmd[]  = { "cmd.exe", NULL };
 
 static Key keys[] = {
     /* modifier                     key        function             argument */
-    /* { MODKEY|MOD_SHIFT,             VK_RETURN, spawn,               {.v = termcmd } }, */
+    { MODKEY|MOD_SHIFT,             VK_RETURN, spawn,               {.v = termcmd } },
     { MODKEY,                       'B',       togglebar,           {0} },
     { MODKEY,                       'J',       focusstack,          {.i = +1 } },
     { MODKEY,                       'K',       focusstack,          {.i = -1 } },
