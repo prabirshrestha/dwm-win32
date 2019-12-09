@@ -147,6 +147,18 @@ which we would have to filter out.
 Unfortunately the SetWindowsHookEx thingy seems to require a separate
 dll because it will be loaded into each process address space.
 
+COMPILING
+=========
+
+dwm-win32 requires `clang` and `make`. You can install the tools by using
+[scoop](https://scoop.sh) as `scoop install make llvm`.
+
+To compile dwm-win32 use the following command:
+
+```cmd
+make
+```
+
 TODO
 ====
 
