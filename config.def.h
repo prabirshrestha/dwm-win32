@@ -49,7 +49,7 @@ static Layout layouts[] = {
 };
 
 /* key definitions */
-#define MODKEY           (MOD_CONTROL | MOD_ALT)
+#define MODKEY           (MOD_ALT)
 #define TAGKEYS(KEY,TAG) \
     { MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
     { MODKEY|MOD_CONTROL,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -67,20 +67,20 @@ static const char *termcmd[]  = { "cmd.exe", NULL };
 
 static Key keys[] = {
     /* modifier                     key        function             argument */
-    { MODKEY|MOD_SHIFT,             VK_RETURN, spawn,               {.v = termcmd } },
+    /* { MODKEY|MOD_SHIFT,             VK_RETURN, spawn,               {.v = termcmd } }, */
     { MODKEY,                       'B',       togglebar,           {0} },
     { MODKEY,                       'J',       focusstack,          {.i = +1 } },
     { MODKEY,                       'K',       focusstack,          {.i = -1 } },
     { MODKEY,                       'H',       setmfact,            {.f = -0.05} },
     { MODKEY,                       'L',       setmfact,            {.f = +0.05} },
     { MODKEY,                       'I',       showclientinfo,      {0} },
-    { MODKEY,                       VK_RETURN, zoom,                {0} },
+    { MODKEY|MOD_CONTROL,           VK_RETURN, zoom,                {0} },
     { MODKEY,                       VK_TAB,    view,                {0} },
     { MODKEY|MOD_SHIFT,             'C',       killclient,          {0} },
     { MODKEY,                       'T',       setlayout,           {.v = &layouts[0]} },
     { MODKEY,                       'F',       setlayout,           {.v = &layouts[1]} },
     { MODKEY,                       'M',       setlayout,           {.v = &layouts[2]} },
-    { MODKEY,                       VK_SPACE,  setlayout,           {0} },
+    { MODKEY|MOD_CONTROL,           VK_SPACE,  setlayout,           {0} },
     { MODKEY|MOD_SHIFT,             VK_SPACE,  togglefloating,      {0} },
     { MODKEY,                       'N',       toggleborder,        {0} },
     { MODKEY,                       'E',       toggleexplorer,      {0} },
@@ -95,7 +95,7 @@ static Key keys[] = {
     TAGKEYS(                        '7',                            6)
     TAGKEYS(                        '8',                            7)
     TAGKEYS(                        '9',                            8)
-    { MODKEY,                       'Q',       quit,                {0} },
+    { MOD_CONTROL | MODKEY,         'Q',       quit,                {0} },
 };
 
 

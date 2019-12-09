@@ -38,8 +38,6 @@ Usage
 
   dwm uses a modifier key by default this is `ALT`.
 
-  MOD + Shift + Return
-   - start cmd.exe.
 
   MOD + b
    - Toggles bar on and off.
@@ -56,7 +54,7 @@ Usage
   MOD + m
    - Sets monocle layout.
 
-  MOD + space
+  MOD + Control + space
    - Toggles between current and previous layout.
 
   MOD + j
@@ -71,7 +69,7 @@ Usage
   MOD + l
    - Increase master area size.
 
-  MOD + Return
+  MOD + Control + Return
    - Zooms/cycles focused window to/from master area (tiled layouts only).
 
   MOD + Shift + c
@@ -108,7 +106,7 @@ Usage
   MOD + Control + [1..n]
    - Add/remove all windows with nth tag to/from the view.
 
-  MOD + q
+  MOD + Control + q
    - Quit dwm.
 
 
