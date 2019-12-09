@@ -44,6 +44,7 @@ static float mfact      = 0.55; /* factor of master area size [0.05..0.95] */
 #include "bstack.c"
 #include "grid.c"
 #include "gaplessgrid.c"
+#include "fibonacci.c"
 
 static Layout layouts[] = {
     /* symbol     arrange function */
@@ -53,6 +54,8 @@ static Layout layouts[] = {
     { "TTT",      bstack },
     { "###",      gaplessgrid },
     { "+++",      grid },
+    { "(@)",      spiral },
+	{ "[\\]",     dwindle },
 };
 
 /* key definitions */
@@ -91,6 +94,8 @@ static Key keys[] = {
     { MODKEY,                       'B',       setlayout,           {.v = &layouts[3]} },
     { MODKEY,                       'G',       setlayout,           {.v = &layouts[4]} },
     { MODKEY|MOD_SHIFT,             'G',       setlayout,           {.v = &layouts[5]} },
+    { MODKEY,                       'D',       setlayout,           {.v = &layouts[6]} },
+    { MODKEY|MOD_SHIFT,             'D',       setlayout,           {.v = &layouts[7]} },
     { MODKEY|MOD_CONTROL,           VK_SPACE,  setlayout,           {0} },
     { MODKEY|MOD_SHIFT,             VK_SPACE,  togglefloating,      {0} },
     { MODKEY,                       'N',       toggleborder,        {0} },

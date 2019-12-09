@@ -20,7 +20,7 @@ options:
 	@echo CC $<
 	@${CC} -c ${CFLAGS} $<
 
-${OBJS}: config.h config.mk bstack.c grid.c gaplessgrid.c
+${OBJS}: config.h config.mk bstack.c grid.c gaplessgrid.c fibonacci.c
 
 config.h: config.def.h
 	@echo creating $@ from config.def.h
