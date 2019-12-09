@@ -361,7 +361,7 @@ drawbar(void) {
     unsigned long *col;
     Client *c;
     time_t timer;
-    struct tm *date;
+    struct tm date;
     char timestr[256];
 
     for(c = clients; c; c = c->next) {
@@ -396,8 +396,8 @@ drawbar(void) {
     if(showclock) {
         /* Draw Date Time */
         timer = time(NULL);
-        date = localtime(&timer);
-        strftime(timestr, 255, clockfmt, date);
+        localtime_s(&date, &timer);
+        strftime(timestr, 255, clockfmt, &date);
         dc.w = TEXTW(timestr);
         dc.x = ww - dc.w;
         drawtext(timestr, dc.norm, false);
