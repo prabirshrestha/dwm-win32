@@ -72,7 +72,7 @@ static Key keys[] = {
     { MODKEY,                       'K',       focusstack,          {.i = -1 } },
     { MODKEY,                       'H',       setmfact,            {.f = -0.05} },
     { MODKEY,                       'L',       setmfact,            {.f = +0.05} },
-    { MODKEY,                       'I',       showclientclassname, {0} },
+    { MODKEY,                       'I',       showclientinfo,      {0} },
     { MODKEY,                       VK_RETURN, zoom,                {0} },
     { MODKEY,                       VK_TAB,    view,                {0} },
     { MODKEY|MOD_SHIFT,             'C',       killclient,          {0} },

@@ -161,7 +161,7 @@ static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
 static void setup(HINSTANCE hInstance);
 static void setupbar(HINSTANCE hInstance);
-static void showclientclassname(const Arg *arg); 
+static void showclientinfo(const Arg *arg); 
 static void showhide(Client *c);
 static void spawn(const Arg *arg);
 static void tag(const Arg *arg);
@@ -1143,8 +1143,11 @@ setupbar(HINSTANCE hInstance) {
 }
 
 void
-showclientclassname(const Arg *arg) {
-    MessageBox(NULL, getclientclassname(GetForegroundWindow()), "Window class", MB_OK);
+showclientinfo(const Arg *arg) {
+    HWND hwnd = GetForegroundWindow();
+    char buffer[5000];
+    sprintf(buffer, "ClassName:  %s\nTitle:  %s", getclientclassname(hwnd), getclienttitle(hwnd));
+    MessageBox(NULL, buffer, "Window class", MB_OK);
 }
 
 void
