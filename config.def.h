@@ -27,6 +27,7 @@ static Rule rules[] = {
     /* class                                title                                   tags mask   isfloating      ignoreborder */
     { "Progman",                            NULL,                                   0,          true,           true },
     { "MultitaskingViewFrame",              NULL,                                   0,          true,           true },
+    { "MSCTFIME UI",                        NULL,                                   0,          true,           true },
     { "Microsoft-Windows-SnipperToolbar",   "Snipping Tool",                        0,          true,           true },
     { "Microsoft Text Input Application",   NULL,                                   0,          true,           true },
     { "MSO_BORDEREFFECT_WINDOW_CLASS",      NULL,                                   0,          true,           true }, /* onenote */
