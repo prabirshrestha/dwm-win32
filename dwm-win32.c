@@ -873,6 +873,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 keys[wParam].func(&(keys[wParam ].arg));
             }
             break;
+        case WM_DISPLAYCHANGE:
+            updategeom();
+            updatebar();
+            arrange();
+            break;
         default:
             if (msg == shellhookid) { /* Handle the shell hook message */
                 Client *c = getclient((HWND)lParam);
