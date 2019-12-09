@@ -30,6 +30,7 @@ static Rule rules[] = {
     { "Microsoft-Windows-SnipperToolbar",   "Snipping Tool",                        0,          true,           true },
     { "Microsoft Text Input Application",   NULL,                                   0,          true,           true },
     { "MSO_BORDEREFFECT_WINDOW_CLASS",      NULL,                                   0,          true,           true }, /* onenote */
+    { "CASCADIA_HOSTING_WINDOW_CLASS",      NULL,                                   0,          false,          true }, /* onenote */
     { "ThumbnailDeviceHelperWnd",           NULL,                                   0,          true,           true }, /* onenote */
     { "EdgeUiInputTopWndClass",             NULL,                                   0,          true,           true }, /* onenote */
     { NULL,                                 "Snip & Sketch",                        0,          true,           true },
