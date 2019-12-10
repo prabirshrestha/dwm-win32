@@ -34,7 +34,7 @@ static Rule rules[] = {
     { "ThumbnailDeviceHelperWnd",           NULL,                                   0,          true,           true }, /* onenote */
     { "EdgeUiInputTopWndClass",             NULL,                                   0,          true,           true }, /* onenote */
     { NULL,                                 "Snip & Sketch",                        0,          true,           true },
-    { "Chrome_WidgetWin_1",                 "Google Chrome",                      0,          false,          true },
+    { "Chrome_WidgetWin_1",                 "Google Chrome",                        0,          false,          true },
 };
 
 /* layout(s) */
