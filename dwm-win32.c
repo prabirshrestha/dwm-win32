@@ -650,7 +650,8 @@ ismanageable(HWND hwnd){
         return false;
 
     if (strstr(classname, "Windows.UI.Core.CoreWindow") && (
-        strstr(title, "Cortana")  ||
+        strstr(title, "Windows Shell Experience Host") ||
+        strstr(title, "Cortana") ||
         strstr(title, "Start") ||
         strstr(title, "Search"))) {
         return false;
