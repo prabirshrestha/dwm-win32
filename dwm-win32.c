@@ -654,6 +654,9 @@ ismanageable(HWND hwnd){
         strstr(title, "Microsoft Text Input Application") ||
         strstr(title, "Action center") ||
         strstr(title, "New Notification") ||
+        strstr(title, "Date and Time Information") ||
+        strstr(title, "Volume Control") ||
+        strstr(title, "Network Connections") ||
         strstr(title, "Cortana") ||
         strstr(title, "Start") ||
         strstr(title, "Search"))) {
@@ -761,6 +764,8 @@ manage(HWND hwnd) {
     c->isfloating = 
         (!c->iscloaked && (wi.dwStyle & WS_POPUP)) || /* WinStore apps are WS_POPUP so tile them */
         (!(wi.dwStyle & WS_MINIMIZEBOX) && !(wi.dwStyle & WS_MAXIMIZEBOX));
+
+    c->ignoreborder = iscloaked(hwnd);
 
     debug(" window style: %d\n", wi.dwStyle);
     debug("     minimize: %d\n", wi.dwStyle & WS_MINIMIZEBOX);
