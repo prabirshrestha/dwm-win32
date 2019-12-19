@@ -652,6 +652,8 @@ ismanageable(HWND hwnd){
     if (strstr(classname, "Windows.UI.Core.CoreWindow") && (
         strstr(title, "Windows Shell Experience Host") ||
         strstr(title, "Microsoft Text Input Application") ||
+        strstr(title, "Action center") ||
+        strstr(title, "New Notification") ||
         strstr(title, "Cortana") ||
         strstr(title, "Start") ||
         strstr(title, "Search"))) {
