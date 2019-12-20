@@ -188,6 +188,7 @@ typedef BOOL (*RegisterShellHookWindowProc) (HWND);
 
 /* variables */
 static HWND dwmhwnd, barhwnd;
+static HFONT font;
 static char stext[256];
 static int sx, sy, sw, sh; /* X display screen geometry x, y, width, height */ 
 static int by, bh, blw;    /* bar geometry y, height and layout symbol width */
@@ -317,6 +318,9 @@ cleanup() {
     hwnd = FindWindow("Shell_TrayWnd", NULL);
     if (hwnd)
         setvisibility(hwnd, TRUE);
+
+    if (font)
+        DeleteObject(font);
 }
 
 void
@@ -449,9 +453,11 @@ drawtext(const char *text, unsigned long col[ColLast], bool invert) {
     SetBkMode(dc.hdc, TRANSPARENT);
     SetTextColor(dc.hdc, col[invert ? ColBG : ColFG]);
 
-    HFONT font = CreateFont(fontsize, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, fontname);
-    if (!font)
-        font = (HFONT)GetStockObject(SYSTEM_FONT);
+    if (!font) {
+        font = CreateFont(fontsize, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, fontname);
+        if (!font)
+            font = (HFONT)GetStockObject(SYSTEM_FONT);
+        }
     SelectObject(dc.hdc, font);
 
     DrawText(dc.hdc, text, -1, &r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
