@@ -36,6 +36,7 @@ static Rule rules[] = {
     { "CabinetWClass",                      NULL,                                   0,          false,          true }, /* file explorer */
     { NULL,                                 "Snip & Sketch",                        0,          true,           true },
     { "Chrome_WidgetWin_1",                 "Google Chrome",                        0,          false,          true },
+    { NULL,                                 "vimrun.exe",                           0,          true,           true },
 };
 
 /* layout(s) */
