@@ -665,6 +665,7 @@ ismanageable(HWND hwnd){
         wcsstr(title, L"Network Connections") ||
         wcsstr(title, L"Cortana") ||
         wcsstr(title, L"Start") ||
+        wcsstr(title, L"Windows Default Lock Screen") ||
         wcsstr(title, L"Search"))) {
         return false;
     }
