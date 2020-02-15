@@ -82,7 +82,7 @@ Usage
    - Toggles border of currently focused window.
 
   Mod + i
-   - Display classname of currently focused window, useful for wiriting
+   - Display classname of currently focused window, useful for writing
      tagging rules.
 
   MOD + Tab

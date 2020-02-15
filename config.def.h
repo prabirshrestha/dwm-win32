@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 #define NDEBUG 1
 
-static const char *fontname         = "Fira Code";
+static const wchar_t *fontname         = L"Fira Code";
 static const unsigned int fontsize  = 20;
 
 /* appearance, colors are specified in the form 0x00bbggrr or with the RGB(r, g, b) macro */
@@ -20,23 +20,23 @@ static bool showclock                 = true;     /* false means no clock */
 static bool showexploreronstart       = false;    /* false means do not show explorer/task bar on start */
 
 /* tagging */
-static const char tags[][MAXTAGLEN] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const wchar_t tags[][MAXTAGLEN] = { L"1", L"2", L"3", L"4", L"5", L"6", L"7", L"8", L"9" };
 static unsigned int tagset[] = {1, 1}; /* after start, first tag is selected */
 
 static Rule rules[] = {
     /* class                                title                                   tags mask   isfloating      ignoreborder */
-    { "MultitaskingViewFrame",              NULL,                                   0,          true,           true },
-    { "MSCTFIME UI",                        NULL,                                   0,          true,           true },
-    { "Microsoft-Windows-SnipperToolbar",   "Snipping Tool",                        0,          true,           true },
-    { "Microsoft Text Input Application",   NULL,                                   0,          true,           true },
-    { "MSO_BORDEREFFECT_WINDOW_CLASS",      NULL,                                   0,          true,           true },
-    { "CASCADIA_HOSTING_WINDOW_CLASS",      NULL,                                   0,          false,          true },
-    { "ThumbnailDeviceHelperWnd",           NULL,                                   0,          true,           true },
-    { "EdgeUiInputTopWndClass",             NULL,                                   0,          true,           true },
-    { "CabinetWClass",                      NULL,                                   0,          false,          true }, /* file explorer */
-    { NULL,                                 "Snip & Sketch",                        0,          true,           true },
-    { "Chrome_WidgetWin_1",                 "Google Chrome",                        0,          false,          true },
-    { NULL,                                 "vimrun.exe",                           0,          true,           true },
+    { L"MultitaskingViewFrame",              NULL,                                   0,          true,           true },
+    { L"MSCTFIME UI",                        NULL,                                   0,          true,           true },
+    { L"Microsoft-Windows-SnipperToolbar",   L"Snipping Tool",                        0,          true,           true },
+    { L"Microsoft Text Input Application",   NULL,                                   0,          true,           true },
+    { L"MSO_BORDEREFFECT_WINDOW_CLASS",      NULL,                                   0,          true,           true },
+    { L"CASCADIA_HOSTING_WINDOW_CLASS",      NULL,                                   0,          false,          true },
+    { L"ThumbnailDeviceHelperWnd",           NULL,                                   0,          true,           true },
+    { L"EdgeUiInputTopWndClass",             NULL,                                   0,          true,           true },
+    { L"CabinetWClass",                      NULL,                                   0,          false,          true }, /* file explorer */
+    { NULL,                                 L"Snip & Sketch",                        0,          true,           true },
+    { L"Chrome_WidgetWin_1",                 L"Google Chrome",                        0,          false,          true },
+    { NULL,                                 L"vimrun.exe",                           0,          true,           true },
 };
 
 /* layout(s) */
@@ -49,14 +49,14 @@ static float mfact      = 0.55; /* factor of master area size [0.05..0.95] */
 
 static Layout layouts[] = {
     /* symbol     arrange function */
-    { "[]=",      tile },    /* first entry is default */
-    { "><>",      NULL },    /* no layout function means floating behavior */
-    { "[M]",      monocle },
-    { "TTT",      bstack },
-    { "###",      gaplessgrid },
-    { "+++",      grid },
-    { "(@)",      spiral },
-	{ "[\\]",     dwindle },
+    { L"[]=",      tile },    /* first entry is default */
+    { L"><>",      NULL },    /* no layout function means floating behavior */
+    { L"[M]",      monocle },
+    { L"TTT",      bstack },
+    { L"###",      gaplessgrid },
+    { L"+++",      grid },
+    { L"(@)",      spiral },
+	{ L"[\\]",     dwindle },
 };
 
 /* key definitions */
@@ -67,14 +67,14 @@ static Layout layouts[] = {
     { MODKEY|MOD_SHIFT,             KEY,      tag,            {.ui = 1 << TAG} }, \
     { MODKEY|MOD_CONTROL|MOD_SHIFT, KEY,      toggletag,      {.ui = 1 << TAG} },
 
-static char clockfmt[] = "%m/%d/%Y %a %H:%M";
+static wchar_t clockfmt[] = L"%m/%d/%Y %a %H:%M";
 static int clock_interval = 15000;
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+#define SHCMD(cmd) { .v = (const wchar_t*[]){ L"/bin/sh", L"-c", cmd, NULL } }
 
 /* commands */
-static const char *termcmd[]  = { "wt.exe", NULL };
+static const wchar_t *termcmd[]  = { L"wt.exe", NULL };
 
 static Key keys[] = {
     /* modifier                     key        function             argument */
