@@ -78,7 +78,7 @@ static const wchar_t *termcmd[]  = { L"wt.exe", NULL };
 
 static Key keys[] = {
     /* modifier                     key        function             argument */
-    {}, // ??? dummy empty
+    { 0 }, // ??? dummy empty
     { MODKEY|MOD_SHIFT,             VK_RETURN, spawn,               {.v = termcmd } },
     { MODKEY|MOD_CONTROL,           'B',       togglebar,           {0} },
     { MODKEY,                       'J',       focusstack,          {.i = +1 } },
