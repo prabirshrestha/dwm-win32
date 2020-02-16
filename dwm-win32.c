@@ -170,7 +170,6 @@ static int textnw(const wchar_t *text, unsigned int len);
 static void tile(void);
 static void togglebar(const Arg *arg);
 static void toggleborder(const Arg *arg);
-static void toggleclock(const Arg *arg);
 static void toggleexplorer(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void toggletag(const Arg *arg);
@@ -1415,17 +1414,10 @@ zoom(const Arg *arg) {
     arrange();
 }
 
-void
-toggleclock(const Arg *arg) {
-    showclock = !showclock;
-    updatebar();
-    arrange();
-}
-
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nShowCmd) {    
     MSG msg;
 
-    HANDLE mutex = CreateMutex(NULL, TRUE, NAME);
+    HANDLE mutex = CreateMutexW(NULL, TRUE, NAME);
     if (mutex == NULL || GetLastError() == ERROR_ALREADY_EXISTS) {
         MessageBoxW(NULL, L"dwm-win32 already running.", L"Error", MB_OK);
         die(L"dwm-win32 already running");
