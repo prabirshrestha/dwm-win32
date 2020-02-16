@@ -1425,6 +1425,13 @@ toggleclock(const Arg *arg) {
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nShowCmd) {    
     MSG msg;
 
+    HANDLE mutex = CreateMutex(NULL, TRUE, NAME);
+    if (mutex == NULL || GetLastError() == ERROR_ALREADY_EXISTS) {
+        MessageBoxW(NULL, L"dwm-win32 already running.", L"Error", MB_OK);
+        die(L"dwm-win32 already running");
+        return FALSE;
+    }
+
     setup(hInstance);
 
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
