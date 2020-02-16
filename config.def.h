@@ -56,7 +56,7 @@ static Layout layouts[] = {
     { L"###",      gaplessgrid },
     { L"+++",      grid },
     { L"(@)",      spiral },
-	{ L"[\\]",     dwindle },
+    { L"[\\]",     dwindle },
 };
 
 /* key definitions */
