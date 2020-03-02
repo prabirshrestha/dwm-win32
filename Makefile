@@ -33,5 +33,6 @@ ${TARGET_EXEC}: ${OBJS}
 clean:
 	@echo cleaning
 	@rm -f ${OBJS} config.h ${TARGET_EXEC}
+	@rm -f *.pdb *.ilk
 
 .PHONY: all options clean

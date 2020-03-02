@@ -159,6 +159,18 @@ To compile dwm-win32 use the following command:
 make
 ```
 
+To generate a pdb and disable optimizations use the following command to compile the debug version:
+
+```cmd
+make DEBUG=1
+```
+
+To compile a 32-bit version use the following command:
+
+```cmd
+make 32BIT=1
+```
+
 TODO
 ====
 

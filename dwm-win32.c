@@ -544,6 +544,7 @@ managechildwindows(Client *p) {
                 c = t;
                 continue;
             }
+
             /* reset flag for next check */
             c->isalive = false;
         }
@@ -762,14 +763,11 @@ manage(HWND hwnd) {
     };
 
     if (IsWindowVisible(hwnd))
+    {
         SetWindowPlacement(hwnd, &wp);
+    }
     
-    /* maybe we could also filter based on 
-     * WS_MINIMIZEBOX and WS_MAXIMIZEBOX
-     */
-    c->isfloating = 
-        (!c->iscloaked && (wi.dwStyle & WS_POPUP)) || /* WinStore apps are WS_POPUP so tile them */
-        (!(wi.dwStyle & WS_MINIMIZEBOX) && !(wi.dwStyle & WS_MAXIMIZEBOX));
+    c->isfloating = (!(wi.dwStyle & WS_MINIMIZEBOX) && !(wi.dwStyle & WS_MAXIMIZEBOX));
 
     c->ignoreborder = iscloaked(hwnd);
 
@@ -978,6 +976,7 @@ scan(HWND hwnd, LPARAM lParam) {
         c->isalive = true;
     else if (ismanageable(hwnd))
         manage(hwnd);
+
     return TRUE;
 }
 
