@@ -763,9 +763,7 @@ manage(HWND hwnd) {
     };
 
     if (IsWindowVisible(hwnd))
-    {
         SetWindowPlacement(hwnd, &wp);
-    }
     
     c->isfloating = (!(wi.dwStyle & WS_MINIMIZEBOX) && !(wi.dwStyle & WS_MAXIMIZEBOX));
 
