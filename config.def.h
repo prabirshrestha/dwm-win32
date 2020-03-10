@@ -34,6 +34,11 @@ static Rule rules[] = {
     { L"ThumbnailDeviceHelperWnd",           NULL,                                   0,          true,           true },
     { L"EdgeUiInputTopWndClass",             NULL,                                   0,          true,           true },
     { L"CabinetWClass",                      NULL,                                   0,          false,          true }, /* file explorer */
+    { L"XLMAIN",                             NULL,                                   0,          false,          true }, /* Excel */
+    { NULL,                                  L"MSO_BORDEREFFECT_WINDOW_CLASS",       0,          false,          true }, /* Excel */
+    { L"PPTFrameClass",                      NULL,                                   0,          false,          true }, /* PowerPoint */
+    { L"OpusApp",                            NULL,                                   0,          false,          true }, /* Word */
+    { NULL,                                  L"OneNote",                             0,          false,          true }, /* OneNote */
     { NULL,                                 L"Snip & Sketch",                        0,          true,           true },
     { L"Chrome_WidgetWin_1",                 L"Google Chrome",                        0,          false,          true },
     { NULL,                                 L"vimrun.exe",                           0,          true,           true },
