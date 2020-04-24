@@ -179,7 +179,7 @@ static void updatebar(void);
 static void updategeom(void);
 static void view(const Arg *arg);
 static void zoom(const Arg *arg);
-static bool iscloaked(HWND hWnd);
+static bool iscloaked(HWND hwnd);
 
 /* Shell hook stuff */
 
@@ -579,7 +579,7 @@ getclienttitle(HWND hwnd) {
 }
 
 HWND
-getroot(HWND hwnd){
+getroot(HWND hwnd) {
     HWND parent, deskwnd = GetDesktopWindow();
 
     while ((parent = GetWindow(hwnd, GW_OWNER)) != NULL && deskwnd != parent)
@@ -597,17 +597,18 @@ grabkeys(HWND hwnd) {
 }
 
 bool
-iscloaked(HWND hWnd) {
-    int CloakedVal;
-    HRESULT hRes = DwmGetWindowAttribute(hWnd, DWMWA_CLOAKED, &CloakedVal, sizeof(CloakedVal));
-    if (hRes != S_OK) {
-        CloakedVal = 0;
-    }
-    return CloakedVal ? true : false;
+iscloaked(HWND hwnd) {
+    int cloaked_val;
+    HRESULT h_res = DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, &cloaked_val, sizeof(cloaked_val));
+
+    if (h_res != S_OK)
+        cloaked_val = 0;
+
+    return cloaked_val ? true : false;
 }
 
 bool
-ismanageable(HWND hwnd){
+ismanageable(HWND hwnd) {
     if (hwnd == 0)
         return false;
 
@@ -653,6 +654,10 @@ ismanageable(HWND hwnd){
     }
 
     if (noactiviate)
+        return false;
+
+    /* This is to avoid managing inactive suspended windows 10 modern apps */
+    if (iscloaked(hwnd))
         return false;
 
     if (wcsstr(classname, L"Windows.UI.Core.CoreWindow") && (
@@ -776,9 +781,10 @@ manage(HWND hwnd) {
     debug(L"   isfloating: %d\n", c->isfloating);
 
     applyrules(c);
-    
+
     if (!c->isfloating)
         setborder(c, false);
+        
 
     if (c->isfloating && IsWindowVisible(hwnd)) {
         debug(L" new floating window: x: %d y: %d w: %d h: %d\n", wi.rcWindow.left, wi.rcWindow.top, wi.rcWindow.right - wi.rcWindow.left, wi.rcWindow.bottom - wi.rcWindow.top);

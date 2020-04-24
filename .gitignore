@@ -1,5 +1,9 @@
 *.o
 *.exe
+*.ilk
+*.pdb
+
 config.h
+
 tags
 *.swp
