@@ -18,7 +18,7 @@ ifeq ($(DEBUG),1)
 	CFLAGS += -g -gcodeview -O0
 	LDFLAGS += -g
 else
-	CFLAGS += -Os
+	CFLAGS += -Os -D NDEBUG
 endif
 
 

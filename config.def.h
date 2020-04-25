@@ -17,6 +17,7 @@ static const unsigned int textmargin  = 15;       /* margin for the text display
 static bool showbar                   = true;     /* false means no bar */
 static bool topbar                    = true;     /* false means bottom bar */
 static bool showclock                 = true;     /* false means no clock */
+static bool showutcclock              = true;     /* false means no utc clock */
 static bool showexploreronstart       = false;    /* false means do not show explorer/task bar on start */
 
 /* tagging */

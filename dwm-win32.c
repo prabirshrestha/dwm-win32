@@ -46,11 +46,14 @@
 #define HEIGHT(x)               ((x)->h + 2 * (x)->bw)
 #define TAGMASK                 ((int)((1LL << LENGTH(tags)) - 1))
 #define TEXTW(x)                (textnw(x, wcslen(x)))
+
 #ifdef NDEBUG
-# define debug(format, args...) do { } while(false)
+#define debug(...) do { } while(false)
 #else
-# define debug eprint
+#define debug(...) eprint(__VA_ARGS__)
 #endif
+
+#define die(...) if (TRUE) { debug(__VA_ARGS__); cleanup(); exit(EXIT_FAILURE); }
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast };        /* cursor */
@@ -134,7 +137,6 @@ static void cleanup();
 static void clearurgent(Client *c);
 static void detach(Client *c);
 static void detachstack(Client *c);
-static void die(const wchar_t *errstr, ...);
 static void drawbar(void);
 static void drawsquare(bool filled, bool empty, bool invert, unsigned long col[ColLast]);
 static void drawtext(const wchar_t *text, unsigned long col[ColLast], bool invert);
@@ -344,17 +346,6 @@ detachstack(Client *c) {
 }
 
 void
-die(const wchar_t *errstr, ...) {
-    va_list ap;
-
-    va_start(ap, errstr);
-    vfwprintf(stderr, errstr, ap);
-    va_end(ap);
-    cleanup();
-    exit(EXIT_FAILURE);
-}
-
-void
 drawbar(void) {
     dc.hdc = GetWindowDC(barhwnd);
 
@@ -367,6 +358,8 @@ drawbar(void) {
     time_t timer;
     struct tm date;
     wchar_t timestr[256];
+    wchar_t localtimestr[256];
+    wchar_t utctimestr[256];
 
     for(c = clients; c; c = c->next) {
         occ |= c->tags;
@@ -401,7 +394,18 @@ drawbar(void) {
         /* Draw Date Time */
         timer = time(NULL);
         localtime_s(&date, &timer);
-        wcsftime(timestr, 255, clockfmt, &date);
+        wcsftime(localtimestr, 255, clockfmt, &date);
+
+        if (showutcclock) {
+            timer = time(NULL);
+            gmtime_s(&date, &timer);
+            wcsftime(utctimestr, 255, clockfmt, &date);
+
+            swprintf(timestr, sizeof(timestr), L"%s | UTC: %s", localtimestr, utctimestr);
+        } else {
+            swprintf(timestr, sizeof(localtimestr), L"%s", localtimestr);
+        }
+
         dc.w = TEXTW(timestr);
         dc.x = ww - dc.w;
         drawtext(timestr, dc.norm, false);
@@ -465,10 +469,42 @@ drawtext(const wchar_t *text, unsigned long col[ColLast], bool invert) {
 void
 eprint(const wchar_t *errstr, ...) {
     va_list ap;
+    int num_of_chars;
+    wchar_t* buffer = NULL;
+    size_t buffer_num_of_chars;
+    wchar_t program_name[] = L"dwm-win32: ";
 
     va_start(ap, errstr);
-    vfwprintf(stderr, errstr, ap);
-    fflush(stderr);
+
+    num_of_chars = _vscwprintf(errstr, ap);
+    if (num_of_chars == -1) {
+        OutputDebugStringW(L"_vscwprintf failed in eprint");
+        goto cleanup;
+    }
+
+    buffer_num_of_chars = wcslen(program_name) + num_of_chars + 1;
+    buffer = (wchar_t*)calloc(buffer_num_of_chars, sizeof(wchar_t));
+    if (buffer == NULL) {
+        OutputDebugStringW(L"calloc failed in eprint");
+        goto cleanup;
+    }
+
+    if (wcscpy_s(buffer, buffer_num_of_chars, program_name) != 0) {
+        OutputDebugStringW(L"wcscpy_s failed in eprint");
+        goto cleanup;
+    }
+
+    if (vswprintf(buffer + wcslen(program_name), num_of_chars + 1, errstr, ap) < 0) {
+        OutputDebugStringW(L"vswprintf failed in eprint");
+        goto cleanup;
+    }
+
+    OutputDebugStringW(buffer);
+
+cleanup:
+    if (buffer != NULL)
+        free(buffer);
+    
     va_end(ap);
 }
 
@@ -616,7 +652,6 @@ ismanageable(HWND hwnd) {
         return true;
 
     HWND parent = GetParent(hwnd);    
-    HWND owner = GetWindow(hwnd, GW_OWNER);
     int style = GetWindowLong(hwnd, GWL_STYLE);
     int exstyle = GetWindowLong(hwnd, GWL_EXSTYLE);
     bool pok = (parent != 0 && ismanageable(parent));
@@ -635,7 +670,7 @@ ismanageable(HWND hwnd) {
     debug(L" visible: %d\n", IsWindowVisible(hwnd));
     debug(L"  parent: %d\n", parent);
     debug(L"parentok: %d\n", pok);
-    debug(L"   owner: %d\n", owner);
+    debug(L"   owner: %d\n", GetWindow(hwnd, GW_OWNER));
     debug(L" toolwin: %d\n", istool);
     debug(L"  appwin: %d\n", isapp);
     debug(L"noactivate: %d\n", noactiviate);
