@@ -358,6 +358,8 @@ drawbar(void) {
     time_t timer;
     struct tm date;
     wchar_t timestr[256];
+    wchar_t localtimestr[256];
+    wchar_t utctimestr[256];
 
     for(c = clients; c; c = c->next) {
         occ |= c->tags;
@@ -392,7 +394,18 @@ drawbar(void) {
         /* Draw Date Time */
         timer = time(NULL);
         localtime_s(&date, &timer);
-        wcsftime(timestr, 255, clockfmt, &date);
+        wcsftime(localtimestr, 255, clockfmt, &date);
+
+        if (showutcclock) {
+            timer = time(NULL);
+            gmtime_s(&date, &timer);
+            wcsftime(utctimestr, 255, clockfmt, &date);
+
+            swprintf(timestr, sizeof(timestr), L"%s | UTC: %s", localtimestr, utctimestr);
+        } else {
+            swprintf(timestr, sizeof(localtimestr), L"%s", localtimestr);
+        }
+
         dc.w = TEXTW(timestr);
         dc.x = ww - dc.w;
         drawtext(timestr, dc.norm, false);
