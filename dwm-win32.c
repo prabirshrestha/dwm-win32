@@ -457,42 +457,40 @@ void
 eprint(const wchar_t *errstr, ...) {
     va_list ap;
     int num_of_chars;
-    wchar_t* buffer;
+    wchar_t* buffer = NULL;
     size_t buffer_num_of_chars;
     wchar_t program_name[] = L"dwm-win32: ";
 
     va_start(ap, errstr);
 
     num_of_chars = _vscwprintf(errstr, ap);
-    if (num_of_chars == -1)
-    {
+    if (num_of_chars == -1) {
         OutputDebugStringW(L"_vscwprintf failed in eprint");
-        return;
+        goto cleanup;
     }
 
     buffer_num_of_chars = wcslen(program_name) + num_of_chars + 1;
     buffer = (wchar_t*)calloc(buffer_num_of_chars, sizeof(wchar_t));
-    if (buffer == NULL)
-    {
+    if (buffer == NULL) {
         OutputDebugStringW(L"calloc failed in eprint");
-        return;
+        goto cleanup;
     }
 
-    if (wcscpy_s(buffer, buffer_num_of_chars, program_name) != 0)
-    {
+    if (wcscpy_s(buffer, buffer_num_of_chars, program_name) != 0) {
         OutputDebugStringW(L"wcscpy_s failed in eprint");
-        return;
+        goto cleanup;
     }
 
-    if (vswprintf(buffer + wcslen(program_name), num_of_chars + 1, errstr, ap) < 0)
-    {
+    if (vswprintf(buffer + wcslen(program_name), num_of_chars + 1, errstr, ap) < 0) {
         OutputDebugStringW(L"vswprintf failed in eprint");
-        return;
+        goto cleanup;
     }
 
     OutputDebugStringW(buffer);
 
-    free(buffer);
+cleanup:
+    if (buffer != NULL)
+        free(buffer);
     
     va_end(ap);
 }
