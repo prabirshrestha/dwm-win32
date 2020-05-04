@@ -39,92 +39,65 @@ Usage
   dwm uses a modifier key by default this is `ALT`.
 
 
-  `MOD + b`
-   - Toggles bar on and off.
+  `MOD + b`  Toggles bar on and off.
 
-  `MOD + e`
-   - Toogles windows explorer and taskbar on and off.
+  `MOD + e` Toogles windows explorer and taskbar on and off.
 
-  `MOD + t`
-   - Sets tiled layout.
+  `MOD + t` Sets tiled layout.
 
-  `MOD + f`
-   - Sets floating layout.
+  `MOD + f` Sets floating layout.
 
-  `MOD + m`
-   - Sets monocle layout.
+  `MOD + m` Sets monocle layout.
 
-  `MOD + Control + space`
-   - Toggles between current and previous layout.
+  `MOD + Control + space` Toggles between current and previous layout.
 
-  `MOD + j`
-   - Focus next window.
+  `MOD + j` Focus next window.
 
-  `MOD + k`
-   - Focus previous window.
+  `MOD + k` Focus previous window.
 
-  `MOD + h`
-   - Decrease master area size.
+  `MOD + h` Decrease master area size.
 
-  `MOD + l`
-   - Increase master area size.
+  `MOD + l` Increase master area size.
 
-  `MOD + Control + Return`
-   - Zooms/cycles focused window to/from master area (tiled layouts only).
+  `MOD + Control + Return` Zooms/cycles focused window to/from master area (tiled layouts only).
 
-  `MOD + Shift + c`
-   - Close focused window.
+  `MOD + Shift + c` Close focused window.
 
-  `MOD + Shift + Space`
-   - Toggle focused window between tiled and floating state.
+  `MOD + Shift + Space` Toggle focused window between tiled and floating state.
 
-  `MOD + n`
-   - Toggles border of currently focused window.
+  `MOD + n` Toggles border of currently focused window.
 
-  `Mod + i`
-   - Display classname of currently focused window, useful for writing
+  `Mod + i` Display classname of currently focused window, useful for writing
      tagging rules.
 
-  `MOD + Tab`
-   - Toggles to the previously selected tags.
+  `MOD + Tab` Toggles to the previously selected tags.
 
-  `MOD + Shift + [1..n]`
-   - Apply nth tag to focused window.
+  `MOD + Shift + [1..n]` Apply nth tag to focused window.
 
-  `MOD + Shift + 0`
-   - Apply all tags to focused window.
+  `MOD + Shift + 0` Apply all tags to focused window.
 
-  `MOD + Control + Shift + [1..n]`
-   - Add/remove nth tag to/from focused window.
+  `MOD + Control + Shift + [1..n]` Add/remove nth tag to/from focused window.
 
-  `MOD + [1..n]`
-   - View all windows with nth tag.
+  `MOD + [1..n]`  View all windows with nth tag.
 
-  `MOD + 0`
-   - View all windows with any tag.
+  `MOD + 0` View all windows with any tag.
 
-  `MOD + Control + [1..n]`
-   - Add/remove all windows with nth tag to/from the view.
+  `MOD + Control + [1..n]` Add/remove all windows with nth tag to/from the view.
 
-  `MOD + Control + q`
-   - Quit dwm.
+  `MOD + Control + q`  Quit dwm.
 
 
  Mouse
 
-  `Left Button`
-    - click on a tag label to display all windows with that tag, click
+  `Left Button` click on a tag label to display all windows with that tag, click
       on the layout label toggles between tiled and floating layout.
 
-  `Right Button`
-    - click on a tag label adds/removes all windows with that tag to/from
+  `Right Button` click on a tag label adds/removes all windows with that tag to/from
       the view.
 
-  `Alt + Left Button`
-    - click on a tag label applies that tag to the focused window.
+  `Alt + Left Button` click on a tag label applies that tag to the focused window.
 
-  `Alt + Right Button`
-    - click on a tag label adds/removes that tag to/from the focused window.
+  `Alt + Right Button` click on a tag label adds/removes that tag to/from the focused window.
 
 
 How it works
