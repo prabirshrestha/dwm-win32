@@ -34,7 +34,7 @@ dwm draws a small border around windows to indicate the focus state.
 Usage
 =====
 
- Keyboard
+ ## Keyboard
 
   dwm uses a modifier key by default this is `ALT`.
 
@@ -87,7 +87,7 @@ Usage
   `MOD + Control + q`  Quit dwm.
 
 
- Mouse
+ ## Mouse
 
   `Left Button` click on a tag label to display all windows with that tag, click
       on the layout label toggles between tiled and floating layout.
