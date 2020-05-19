@@ -89,6 +89,8 @@ static Key keys[] = {
     { MODKEY|MOD_CONTROL,           'B',       togglebar,           {0} },
     { MODKEY,                       'J',       focusstack,          {.i = +1 } },
     { MODKEY,                       'K',       focusstack,          {.i = -1 } },
+    { MODKEY|MOD_SHIFT,             'J',       movestack,           {.i = +1 } },
+    { MODKEY|MOD_SHIFT,             'K',       movestack,           {.i = -1 } },
     { MODKEY,                       'H',       setmfact,            {.f = -0.05} },
     { MODKEY,                       'L',       setmfact,            {.f = +0.05} },
     { MODKEY,                       'I',       showclientinfo,      {0} },
