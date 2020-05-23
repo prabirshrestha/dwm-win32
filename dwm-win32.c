@@ -49,10 +49,10 @@
 #ifdef NDEBUG
 #define debug(...) do { } while (false)
 #else
-#define debug(...) eprint(__VA_ARGS__)
+#define debug(...) eprint(false, __VA_ARGS__)
 #endif
 
-#define die(...) if (TRUE) { debug(__VA_ARGS__); cleanup(); exit(EXIT_FAILURE); }
+#define die(...) if (TRUE) { eprint(true, __VA_ARGS__); eprint(true, L"Win32 Last Error: %d", GetLastError()); cleanup(); exit(EXIT_FAILURE); }
 
 #define EVENT_OBJECT_UNCLOAKED 0x8018
 
@@ -141,7 +141,7 @@ static void drawbar(void);
 static void drawsquare(bool filled, bool empty, bool invert, unsigned long col[ColLast]);
 static void drawtext(const wchar_t *text, unsigned long col[ColLast], bool invert);
 void drawborder(Client *c, COLORREF color);
-void eprint(const wchar_t *errstr, ...);
+void eprint(bool premortem, const wchar_t *errstr, ...);
 static void focus(Client *c);
 static void focusstack(const Arg *arg);
 static void movestack(const Arg *arg);
@@ -215,7 +215,6 @@ static COLORREF colors[2][LENGTH(colorwinelements)] = {
 };
 
 
-/* function implementations */
 void
 applyrules(Client *c) {
     unsigned int i;
@@ -469,7 +468,7 @@ drawtext(const wchar_t *text, unsigned long col[ColLast], bool invert) {
 }
 
 void
-eprint(const wchar_t *errstr, ...) {
+eprint(bool premortem, const wchar_t *errstr, ...) {
     va_list ap;
     int num_of_chars;
     wchar_t* buffer = NULL;
@@ -502,6 +501,9 @@ eprint(const wchar_t *errstr, ...) {
     }
 
     OutputDebugStringW(buffer);
+
+    if (premortem)
+        MessageBoxW(NULL, buffer, L"dwm-win32 has encountered an error", MB_ICONERROR | MB_SETFOREGROUND | MB_OK);
 
 cleanup:
     if (buffer != NULL)
@@ -761,7 +763,6 @@ killclient(const Arg *arg) {
 
 Client*
 manage(HWND hwnd) {    
-    static Client cz;
     Client *c = getclient(hwnd);
 
     if (c)
@@ -777,9 +778,8 @@ manage(HWND hwnd) {
         return NULL;
 
     if (!(c = calloc(1, sizeof(Client))))
-        die(L"fatal: could not malloc() %u bytes\n", sizeof(Client));
+        die(L"fatal: could not calloc() %u bytes for new client\n", sizeof(Client));
 
-    *c = cz;
     c->hwnd = hwnd;
     c->threadid = GetWindowThreadProcessId(hwnd, NULL);
     c->parent = GetParent(hwnd);
@@ -983,7 +983,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                                 arrange();
                             }
                             /* the newly focused window was minimized */
-                            if (sel->isminimized) {
+                            if (sel && sel->isminimized) {
                                 debug(L" newly active window was minimized: %s\n", getclienttitle(sel->hwnd));
                                 sel->isminimized = false;                                
                                 zoom(NULL);
@@ -1010,7 +1010,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-void
+void CALLBACK
 wineventproc(HWINEVENTHOOK heventhook, DWORD event, HWND hwnd, LONG object, LONG child, DWORD eventthread, DWORD eventtime_ms) {
     if (object != OBJID_WINDOW || child != CHILDID_SELF || event != EVENT_OBJECT_UNCLOAKED || hwnd == NULL)
         return;
@@ -1524,15 +1524,14 @@ movestack(const Arg *arg) {
 }
 
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nShowCmd) {    
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nShowCmd) {
     MSG msg;
 
     HANDLE mutex = CreateMutexW(NULL, TRUE, NAME);
-    if (mutex == NULL || GetLastError() == ERROR_ALREADY_EXISTS) {
-        MessageBoxW(NULL, L"dwm-win32 already running.", L"Error", MB_OK);
+    if (mutex == NULL)
+        die(L"Failed to create dwm-win32 mutex");
+    if (GetLastError() == ERROR_ALREADY_EXISTS)
         die(L"dwm-win32 already running");
-        return FALSE;
-    }
 
     setup(hInstance);
 
