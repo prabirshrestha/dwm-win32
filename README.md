@@ -80,6 +80,10 @@ Usage
 
   `MOD + Control + Shift + [1..n]` Add/remove nth tag to/from focused window.
 
+  `MOD + Shift + j` Move stack +1
+
+  `MOD + Shift + k` Move stack -1
+
   `MOD + [1..n]`  View all windows with nth tag.
 
   `MOD + 0` View all windows with any tag.
