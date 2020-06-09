@@ -3,6 +3,8 @@ Windows.
 
 It is recommended to run dwm-win32 as Administrator so it will catch all windows including those you ran as Administrator.
 
+![dwm-win32 screenshot](screenshot.png)
+
 Description
 ===========
 
