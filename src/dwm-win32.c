@@ -1531,6 +1531,8 @@ movestack(const Arg *arg) {
 
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nShowCmd) {
+	SetProcessDPIAware();
+
     MSG msg;
 
     HANDLE mutex = CreateMutexW(NULL, TRUE, NAME);
