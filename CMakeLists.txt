@@ -27,7 +27,7 @@ add_executable(${PROJECT_NAME} WIN32
   src/dwm-win32.c)
 
 configure_file(
-  "${PROJECT_SOURCE_DIR}/config.def.h"
+  "${PROJECT_SOURCE_DIR}/config.h.in"
   "${PROJECT_SOURCE_DIR}/src/config.h"
 )
 
