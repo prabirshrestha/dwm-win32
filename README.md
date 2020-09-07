@@ -134,13 +134,19 @@ COMPILING
 dwm-win32 requires `clang` and `cmake`. You can install the tools by using
 [scoop](https://scoop.sh) as `scoop install cmake llvm`.
 
-To compile dwm-win32 use the following command:
+To compile debug version of dwm-win32 use the following command:
 
 ```cmd
 configure.cmd
 build.cmd
 ```
 
+To compile release version of dwm-win32 use the following command:
+
+```cmd
+cmake -S . -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+cmake --build release
+```
 
 TODO
 ====
