@@ -188,6 +188,11 @@ static void view(const Arg *arg);
 static void zoom(const Arg *arg);
 static bool iscloaked(HWND hwnd);
 
+static int load_lua_api_libs(lua_State *L);
+static const struct luaL_reg dwmlib[] = {
+	{ NULL, NULL }
+};
+
 typedef BOOL (*RegisterShellHookWindowProc) (HWND);
 
 static HWND dwmhwnd, barhwnd;
@@ -1113,8 +1118,10 @@ setmfact(const Arg *arg) {
     arrange();
 }
 
-void
+int
 load_lua_api_libs(lua_State *L) {
+	luaL_register(L, "dwm", dwmlib);
+	return 1;
 }
 
 void
