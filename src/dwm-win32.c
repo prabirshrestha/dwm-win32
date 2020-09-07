@@ -1114,9 +1114,15 @@ setmfact(const Arg *arg) {
 }
 
 void
+load_lua_api_libs(lua_State *L) {
+}
+
+void
 setup(HINSTANCE hInstance) {
 	lua_State *L = luaL_newstate();
 	luaL_openlibs(L);
+
+	load_lua_api_libs(L);
 
     unsigned int i;
 
