@@ -131,26 +131,16 @@ dll because it will be loaded into each process address space.
 COMPILING
 =========
 
-dwm-win32 requires `clang` and `make`. You can install the tools by using
-[scoop](https://scoop.sh) as `scoop install make llvm`.
+dwm-win32 requires `clang` and `cmake`. You can install the tools by using
+[scoop](https://scoop.sh) as `scoop install cmake llvm`.
 
 To compile dwm-win32 use the following command:
 
 ```cmd
-make
+configure.cmd
+build.cmd
 ```
 
-To generate a pdb and disable optimizations use the following command to compile the debug version:
-
-```cmd
-make DEBUG=1
-```
-
-To compile a 32-bit version use the following command:
-
-```cmd
-make 32BIT=1
-```
 
 TODO
 ====
