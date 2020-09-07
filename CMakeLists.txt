@@ -5,6 +5,19 @@ set(CMAKE_C_COMPILER clang)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Build type.
+if(NOT CMAKE_BUILD_TYPE)
+  message(STATUS "CMAKE_BUILD_TYPE not specified, default is 'Debug'")
+  set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build" FORCE)
+else()
+  message(STATUS "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
+endif()
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+  set(DEBUG 1)
+else()
+  set(DEBUG 0)
+endif()
+
 project(dwm-win32
   VERSION 0.0.50
   DESCRIPTION "Dynamic Window Manager for Win32"
@@ -25,17 +38,4 @@ if (NOT MSVC)
     # -Werror
     -Wpedantic
   )
-endif()
-
-# Build type.
-if(NOT CMAKE_BUILD_TYPE)
-  message(STATUS "CMAKE_BUILD_TYPE not specified, default is 'Debug'")
-  set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build" FORCE)
-else()
-  message(STATUS "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
-endif()
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-  set(DEBUG 1)
-else()
-  set(DEBUG 0)
 endif()

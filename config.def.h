@@ -1,5 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-#define DEBUG 1
+#define DEBUG ${DEBUG}
 
 static const wchar_t *fontname         = L"Fira Code";
 static const unsigned int fontsize  = 20;
