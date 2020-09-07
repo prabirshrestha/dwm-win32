@@ -145,7 +145,16 @@ To compile release version of dwm-win32 use the following command:
 
 ```cmd
 cmake -S . -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
-cmake --build release
+cmake --build build
+```
+
+Other unofficial cmake examples:
+
+```cmake
+cmake -G "Visual Studio 16 2019" -A Win32 -S . -B "build\32bit" -DCMAKE_BUILD_TYPE=Release
+cmake -G "Visual Studio 16 2019" -A x64 -S . -B "build\64bit" -DCMAKE_BUILD_TYPE=Release
+cmake --build build\32bit --config Release
+cmake --build build\64bit --config Release
 ```
 
 TODO
