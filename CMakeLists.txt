@@ -26,6 +26,8 @@ project(dwm-win32
 add_executable(${PROJECT_NAME} WIN32
   src/dwm-win32.c)
 
+target_link_libraries(${PROJECT_NAME} lua)
+
 configure_file(
   "${PROJECT_SOURCE_DIR}/config.h.in"
   "${PROJECT_SOURCE_DIR}/src/config.h"
@@ -39,3 +41,13 @@ if (NOT MSVC)
     -Wpedantic
   )
 endif()
+
+set(lua_SOURCE_DIR "${PROJECT_SOURCE_DIR}/extern/lua/src")
+FILE(GLOB lua_sources ${lua_SOURCE_DIR}/*.c)
+list(REMOVE_ITEM lua_sources "${lua_SOURCE_DIR}/lua.c" "${lua_SOURCE_DIR}/luac.c")
+add_library(lua STATIC ${lua_sources})
+
+target_include_directories(lua
+  PUBLIC
+  $<BUILD_INTERFACE:${lua_SOURCE_DIR}>
+)

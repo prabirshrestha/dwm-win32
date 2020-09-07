@@ -23,6 +23,10 @@
 #pragma comment(lib, "dwmapi.lib")
 #endif
 
+#include <lauxlib.h>
+#include <lua.h>
+#include <lualib.h>
+
 #include <windows.h>
 #include <dwmapi.h>
 #include <winuser.h>
@@ -1111,6 +1115,8 @@ setmfact(const Arg *arg) {
 
 void
 setup(HINSTANCE hInstance) {
+	lua_State *L = luaL_newstate();
+	luaL_openlibs(L);
 
     unsigned int i;
 
