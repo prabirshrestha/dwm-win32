@@ -17,12 +17,14 @@ configure_file(
   "${PROJECT_SOURCE_DIR}/src/config.h"
 )
 
-target_compile_options(${PROJECT_NAME} PRIVATE
-  -Wall
-  -Wextra
-  # -Werror
-  -Wpedantic
-)
+if (NOT MSVC)
+  target_compile_options(${PROJECT_NAME} PRIVATE
+    -Wall
+    -Wextra
+    # -Werror
+    -Wpedantic
+  )
+endif()
 
 # Build type.
 if(NOT CMAKE_BUILD_TYPE)
