@@ -8,5 +8,6 @@ config.h
 tags
 *.swp
 
+.clangd/
 build/
 compile_commands.json
