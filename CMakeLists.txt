@@ -51,3 +51,5 @@ target_include_directories(lua
   PUBLIC
   $<BUILD_INTERFACE:${lua_SOURCE_DIR}>
 )
+
+SET(sdl2_SOURCE_DIR "${PROJECT_NAME}/extern/sdl2")
