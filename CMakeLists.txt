@@ -48,7 +48,6 @@ set(lua_SOURCE_DIR "${PROJECT_SOURCE_DIR}/extern/lua/src")
 FILE(GLOB lua_sources ${lua_SOURCE_DIR}/*.c)
 list(REMOVE_ITEM lua_sources "${lua_SOURCE_DIR}/lua.c" "${lua_SOURCE_DIR}/luac.c")
 add_library(lua STATIC ${lua_sources})
-
 target_include_directories(lua
   PUBLIC
   $<BUILD_INTERFACE:${lua_SOURCE_DIR}>
@@ -56,4 +55,7 @@ target_include_directories(lua
 
 set(sdl2_SOURCE_DIR "${PROJECT_SOURCE_DIR}/extern/sdl2")
 add_subdirectory("${sdl2_SOURCE_DIR}")
-include_directories("${sdl2_SOURCE_DIR}/include")
+target_include_directories(SDL2-static
+  PUBLIC
+  $<BUILD_INTERFACE:${sdl2_SOURCE_DIR}/include>
+)
