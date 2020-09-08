@@ -189,7 +189,10 @@ static void zoom(const Arg *arg);
 static bool iscloaked(HWND hwnd);
 
 static int load_lua_api_libs(lua_State *L);
+static int f_dwm_log(lua_State *L);
+
 static const struct luaL_reg dwmlib[] = {
+	{ "log", f_dwm_log },
 	{ NULL, NULL }
 };
 
@@ -1124,12 +1127,23 @@ load_lua_api_libs(lua_State *L) {
 	return 1;
 }
 
+int
+f_dwm_log(lua_State *L) {
+	const char *msg = luaL_checkstring(L, 1);
+    MessageBox(NULL, msg, "dwm-win32 log", MB_OK);
+	return 0;
+}
+
 void
 setup(HINSTANCE hInstance) {
 	lua_State *L = luaL_newstate();
 	luaL_openlibs(L);
 
 	load_lua_api_libs(L);
+
+	/* (void)luaL_dostring(L, */
+	/* 		"local dwm = require('dwm')\n" */
+	/* 		"dwm.log('hello world')"); */
 
     unsigned int i;
 
