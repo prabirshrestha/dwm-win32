@@ -26,3 +26,10 @@ dwm.log(dwm.VERSION) -- ex: 1.0.0
 local dwm = require 'dwm'
 dwm.log(dwm.PLATFORM) -- ex: Windows
 ```
+
+## dwm.EXEFILE
+
+```lua
+local dwm = require 'dwm'
+dwm.log(dwm.EXEFILE) -- ex: c:\apps\dwm-win32.exe
+```

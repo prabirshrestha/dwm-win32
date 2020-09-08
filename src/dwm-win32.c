@@ -191,6 +191,8 @@ static void view(const Arg *arg);
 static void zoom(const Arg *arg);
 static bool iscloaked(HWND hwnd);
 
+static void get_exe_filename(char *buf, int size);
+
 static int dwm_openlibs(lua_State *L);
 static int dwm_opendwm(lua_State *L);
 static int f_dwm_log(lua_State *L);
@@ -1130,6 +1132,12 @@ setmfact(const Arg *arg) {
     arrange();
 }
 
+void
+get_exe_filename(char *buf, int size) {
+	int len = GetModuleFileName(NULL, buf, size - 1);
+	buf[len] = '\0';
+}
+
 int
 f_dwm_log(lua_State *L) {
 	// TODO: support utf-8
@@ -1159,6 +1167,12 @@ dwm_opendwm(lua_State *L) {
 	lua_pushstring(L, SDL_GetPlatform());
 	lua_settable (L, -3);
 
+	char exename[2048];
+	get_exe_filename(exename, sizeof(exename));
+	lua_pushstring(L, "EXEFILE");
+	lua_pushstring(L, exename);
+	lua_settable (L, -3);
+
 	return 1;
 }
 
@@ -1177,6 +1191,10 @@ setup(lua_State *L, HINSTANCE hInstance) {
 #endif
 
 	dwm_openlibs(L);
+
+	(void) luaL_dostring(L,
+		"local dwm = require 'dwm'\n"
+		"dwm.log(dwm.EXEFILE)");
 
     unsigned int i;
 
