@@ -1129,6 +1129,7 @@ load_lua_api_libs(lua_State *L) {
 
 int
 f_dwm_log(lua_State *L) {
+	// TODO: support utf-8
 	const char *msg = luaL_checkstring(L, 1);
     MessageBox(NULL, msg, "dwm-win32 log", MB_OK);
 	return 0;
