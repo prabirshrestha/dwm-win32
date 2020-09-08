@@ -27,6 +27,8 @@
 #include <lua.h>
 #include <lualib.h>
 
+#include <SDL.h>
+
 #include <windows.h>
 #include <dwmapi.h>
 #include <winuser.h>
@@ -56,7 +58,8 @@
 #define debug(...) do { } while (false)
 #endif
 
-#define die(...) if (TRUE) { eprint(true, __VA_ARGS__); eprint(true, L"Win32 Last Error: %d", GetLastError()); cleanup(); exit(EXIT_FAILURE); }
+#define die(...) if (TRUE) { eprint(true, __VA_ARGS__); eprint(true, L"Win32 Last Error: %d", GetLastError()); cleanup(NULL); exit(EXIT_FAILURE); }
+
 
 #define EVENT_OBJECT_UNCLOAKED 0x8018
 
@@ -137,7 +140,7 @@ static void applyrules(Client *c);
 static void arrange(void);
 static void attach(Client *c);
 static void attachstack(Client *c);
-static void cleanup();
+static void cleanup(lua_State *L);
 static void clearurgent(Client *c);
 static void detach(Client *c);
 static void detachstack(Client *c);
@@ -302,7 +305,7 @@ buttonpress(unsigned int button, POINTS *point) {
 }
 
 void
-cleanup() {
+cleanup(lua_State *L) {
     int i;
     Arg a = {.ui = ~0};
     Layout foo = { L"", NULL };
@@ -335,6 +338,11 @@ cleanup() {
 
     if (font)
         DeleteObject(font);
+
+	if (L) {
+		lua_close(L);
+		L = NULL;
+	}
 }
 
 void
@@ -939,7 +947,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case WM_CREATE:
             break;
         case WM_CLOSE:
-            cleanup();
+            cleanup(NULL);
             break;
         case WM_DESTROY:
             PostQuitMessage(0);
@@ -1136,8 +1144,19 @@ f_dwm_log(lua_State *L) {
 }
 
 void
-setup(HINSTANCE hInstance) {
-	lua_State *L = luaL_newstate();
+setup(lua_State *L, HINSTANCE hInstance) {
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+	SDL_EnableScreenSaver();
+	SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
+	atexit(SDL_Quit);
+
+#ifdef SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR /* Available since 2.0.8 */
+	SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
+#endif
+#if SDL_VERSION_ATLEAST(2, 0, 5)
+	SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
+#endif
+
 	luaL_openlibs(L);
 
 	load_lua_api_libs(L);
@@ -1569,14 +1588,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     if (GetLastError() == ERROR_ALREADY_EXISTS)
         die(L"dwm-win32 already running");
 
-    setup(hInstance);
+	lua_State *L = luaL_newstate();
+    setup(L, hInstance);
 
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
 
-    cleanup();
+    cleanup(L);
 
     return msg.wParam;
 }

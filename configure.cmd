@@ -1,2 +1,1 @@
-cmake -S . -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug || exit /b
-copy build\compile_commands.json . || exit /b
+cmake -S . -B build -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Debug || exit /b

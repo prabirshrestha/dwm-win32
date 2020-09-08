@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
-set(CMAKE_C_COMPILER clang)
-# set (CMAKE_C_FLAGS "-m32")
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 # Build type.
 if(NOT CMAKE_BUILD_TYPE)
@@ -23,10 +23,12 @@ project(dwm-win32
   DESCRIPTION "Dynamic Window Manager for Win32"
   LANGUAGES C)
 
+# set_target_properties(${PROJECT_NAME} PROPERTIES C_STANDARD 11)
+
 add_executable(${PROJECT_NAME} WIN32
   src/dwm-win32.c)
 
-target_link_libraries(${PROJECT_NAME} lua)
+target_link_libraries(${PROJECT_NAME} lua SDL2-static)
 
 configure_file(
   "${PROJECT_SOURCE_DIR}/config.h.in"
@@ -46,8 +48,14 @@ set(lua_SOURCE_DIR "${PROJECT_SOURCE_DIR}/extern/lua/src")
 FILE(GLOB lua_sources ${lua_SOURCE_DIR}/*.c)
 list(REMOVE_ITEM lua_sources "${lua_SOURCE_DIR}/lua.c" "${lua_SOURCE_DIR}/luac.c")
 add_library(lua STATIC ${lua_sources})
-
 target_include_directories(lua
   PUBLIC
   $<BUILD_INTERFACE:${lua_SOURCE_DIR}>
+)
+
+set(sdl2_SOURCE_DIR "${PROJECT_SOURCE_DIR}/extern/sdl2")
+add_subdirectory("${sdl2_SOURCE_DIR}")
+target_include_directories(SDL2-static
+  PUBLIC
+  $<BUILD_INTERFACE:${sdl2_SOURCE_DIR}/include>
 )
