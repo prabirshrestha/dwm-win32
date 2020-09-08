@@ -1150,8 +1150,13 @@ dwm_opendwm(lua_State *L) {
 	luaL_register(L, "dwm", dwmlib);
 
 	luaL_openlib(L, "dwm", dwmlib, 0);
+
 	lua_pushstring(L, "VERSION");
 	lua_pushstring(L, PROJECT_VER);
+	lua_settable (L, -3);
+
+	lua_pushstring(L, "PLATFORM");
+	lua_pushstring(L, SDL_GetPlatform());
 	lua_settable (L, -3);
 
 	return 1;
