@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-
 # Build type.
 if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "CMAKE_BUILD_TYPE not specified, default is 'Debug'")
@@ -19,7 +17,7 @@ else()
 endif()
 
 project(dwm-win32
-  VERSION 0.0.50
+  VERSION 0.2.0
   DESCRIPTION "Dynamic Window Manager for Win32"
   LANGUAGES C)
 

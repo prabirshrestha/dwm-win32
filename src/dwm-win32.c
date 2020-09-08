@@ -191,7 +191,8 @@ static void view(const Arg *arg);
 static void zoom(const Arg *arg);
 static bool iscloaked(HWND hwnd);
 
-static int load_lua_api_libs(lua_State *L);
+static int dwm_openlibs(lua_State *L);
+static int dwm_opendwm(lua_State *L);
 static int f_dwm_log(lua_State *L);
 
 static const struct luaL_reg dwmlib[] = {
@@ -1130,17 +1131,30 @@ setmfact(const Arg *arg) {
 }
 
 int
-load_lua_api_libs(lua_State *L) {
-	luaL_register(L, "dwm", dwmlib);
-	return 1;
-}
-
-int
 f_dwm_log(lua_State *L) {
 	// TODO: support utf-8
 	const char *msg = luaL_checkstring(L, 1);
     MessageBox(NULL, msg, "dwm-win32 log", MB_OK);
 	return 0;
+}
+
+int
+dwm_openlibs(lua_State *L) {
+	luaL_openlibs(L);
+	dwm_opendwm(L);
+	return 1;
+}
+
+int
+dwm_opendwm(lua_State *L) {
+	luaL_register(L, "dwm", dwmlib);
+
+	luaL_openlib(L, "dwm", dwmlib, 0);
+	lua_pushstring(L, "VERSION");
+	lua_pushstring(L, PROJECT_VER);
+	lua_settable (L, -3);
+
+	return 1;
 }
 
 void
@@ -1157,13 +1171,7 @@ setup(lua_State *L, HINSTANCE hInstance) {
 	SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
 #endif
 
-	luaL_openlibs(L);
-
-	load_lua_api_libs(L);
-
-	/* (void)luaL_dostring(L, */
-	/* 		"local dwm = require('dwm')\n" */
-	/* 		"dwm.log('hello world')"); */
+	dwm_openlibs(L);
 
     unsigned int i;
 
