@@ -1192,9 +1192,11 @@ setup(lua_State *L, HINSTANCE hInstance) {
 
 	dwm_openlibs(L);
 
+	/*
 	(void) luaL_dostring(L,
 		"local dwm = require 'dwm'\n"
 		"dwm.log(dwm.EXEFILE)");
+	*/
 
     unsigned int i;
 
