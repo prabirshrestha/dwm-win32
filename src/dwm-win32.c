@@ -1148,9 +1148,12 @@ setup(lua_State *L, HINSTANCE hInstance) {
 
 	dwm_openlibs(L);
 
-	/* (void) luaL_dostring(L, */
-	/* 	"local dwm = require 'dwm'\n" */
-	/* 	"dwm.log(dwm.EXEFILE)"); */
+	(void) luaL_dostring(L,
+		"local dwm = require 'dwm'\n"
+		"local screens = require 'dwm.screen'\n"
+		"dwm.log(dwm.EXEFILE)\n"
+		"dwm.log(screens.getScreens()[1])"
+		"\n");
 
     unsigned int i;
 
