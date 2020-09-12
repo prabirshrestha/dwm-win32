@@ -40,7 +40,7 @@
 #include <time.h>
 
 #include "mods/dwm.h"
-#include "mods/screen.h"
+#include "mods/display.h"
 
 #define NAME                    L"dwm-win32"     /* Used for window name/class */
 
@@ -1128,7 +1128,7 @@ int
 dwm_openlibs(lua_State *L) {
 	luaL_openlibs(L);
 	dwmmod_opendwm(L);
-	dwmmod_openscreen(L);
+	dwmmod_opendisplay(L);
 	return 1;
 }
 
@@ -1150,9 +1150,9 @@ setup(lua_State *L, HINSTANCE hInstance) {
 
 	(void) luaL_dostring(L,
 		"local dwm = require 'dwm'\n"
-		"local screens = require 'dwm.screen'\n"
+		"local display = require 'dwm.display'\n"
 		"dwm.log(dwm.EXEFILE)\n"
-		"dwm.log(screens.getScreens()[1])"
+		"dwm.log(display.getDisplays()[1])"
 		"\n");
 
     unsigned int i;

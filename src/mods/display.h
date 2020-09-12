@@ -5,6 +5,6 @@
 #include <lua.h>
 #include <lualib.h>
 
-int dwmmod_openscreen(lua_State *L);
+int dwmmod_opendisplay(lua_State *L);
 
 #endif

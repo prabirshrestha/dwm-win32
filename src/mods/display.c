@@ -1,4 +1,4 @@
-#include "screen.h"
+#include "display.h"
 
 #include <stdint.h>
 
@@ -8,19 +8,19 @@
 
 #include <windows.h>
 
-static int modscreens_getScreens(lua_State *L);
+static int moddisplay_getDisplays(lua_State *L);
 
-static const struct  luaL_reg dwmscreenmod[] = {
-	{ "getScreens", modscreens_getScreens },
+static const struct  luaL_reg dwmdisplaymod[] = {
+	{ "getDisplays", moddisplay_getDisplays },
 	{ NULL, NULL }
 };
 
-int dwmmod_openscreen(lua_State *L) {
-	luaL_register(L, "dwm.screen", dwmscreenmod);
+int dwmmod_opendisplay(lua_State *L) {
+	luaL_register(L, "dwm.display", dwmdisplaymod);
 	return 1;
 }
 
-static int modscreens_getScreens(lua_State *L) {
+static int moddisplay_getDisplays(lua_State *L) {
 	lua_newtable(L);
 
 	DISPLAY_DEVICE dd;
