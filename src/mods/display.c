@@ -31,12 +31,13 @@ static int moddisplay_getDisplays(lua_State *L) {
 	uint32_t index = 0;
 
 	while(EnumDisplayDevices(NULL, devicenum, &dd, 0)) {
+		if (!(dd.StateFlags && DISPLAY_DEVICE_ACTIVE)) continue;
 		DISPLAY_DEVICE newdd = {0};
 		newdd.cb = sizeof(DISPLAY_DEVICE);
 		DWORD monitornum = 0;
 		while(EnumDisplayDevices(dd.DeviceName, monitornum, &newdd, 0)) {
 			lua_pushnumber(L, ++index);				/* push key. lua array starts with 1 */
-			lua_pushstring(L, newdd.DeviceName);	/* push value*/
+			lua_pushstring(L, newdd.DeviceKey);	/* push value*/
 			lua_settable(L, -3);					/* add to table */
 			++monitornum;
 		}
