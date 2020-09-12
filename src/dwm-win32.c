@@ -193,9 +193,6 @@ static void view(const Arg *arg);
 static void zoom(const Arg *arg);
 static bool iscloaked(HWND hwnd);
 
-static void get_exe_filename(char *buf, int size);
-
-
 typedef BOOL (*RegisterShellHookWindowProc) (HWND);
 
 static HWND dwmhwnd, barhwnd;
@@ -1126,12 +1123,6 @@ setmfact(const Arg *arg) {
     arrange();
 }
 
-void
-get_exe_filename(char *buf, int size) {
-	int len = GetModuleFileName(NULL, buf, size - 1);
-	buf[len] = '\0';
-}
-
 int
 dwm_openlibs(lua_State *L) {
 	luaL_openlibs(L);
@@ -1155,9 +1146,9 @@ setup(lua_State *L, HINSTANCE hInstance) {
 
 	dwm_openlibs(L);
 
-	(void) luaL_dostring(L,
-		"local dwm = require 'dwm'\n"
-		"dwm.log('hello world')");
+	/* (void) luaL_dostring(L, */
+	/* 	"local dwm = require 'dwm'\n" */
+	/* 	"dwm.log(dwm.EXEFILE)"); */
 
     unsigned int i;
 
