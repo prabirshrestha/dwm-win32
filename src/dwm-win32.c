@@ -40,6 +40,7 @@
 #include <time.h>
 
 #include "mods/dwm.h"
+#include "mods/screen.h"
 
 #define NAME                    L"dwm-win32"     /* Used for window name/class */
 
@@ -1127,6 +1128,7 @@ int
 dwm_openlibs(lua_State *L) {
 	luaL_openlibs(L);
 	dwmmod_opendwm(L);
+	dwmmod_openscreen(L);
 	return 1;
 }
 
