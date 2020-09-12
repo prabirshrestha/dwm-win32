@@ -23,8 +23,11 @@ project(dwm-win32
 
 # set_target_properties(${PROJECT_NAME} PROPERTIES C_STANDARD 11)
 
+file(GLOB MOD_SOURCES "src/mods/*.c")
+
 add_executable(${PROJECT_NAME} WIN32
-  src/dwm-win32.c)
+  src/dwm-win32.c
+  ${MOD_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} lua SDL2-static)
 
