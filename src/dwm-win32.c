@@ -1148,12 +1148,13 @@ setup(lua_State *L, HINSTANCE hInstance) {
 
 	dwm_openlibs(L);
 
+	/*
 	(void) luaL_dostring(L,
 		"local dwm = require 'dwm'\n"
 		"local display = require 'dwm.display'\n"
-		"dwm.log(dwm.EXEFILE)\n"
-		"dwm.log(display.getDisplays()[1])"
+		"dwm.log(tostring(display.getDisplays()[1].height))"
 		"\n");
+	*/
 
     unsigned int i;
 
