@@ -22,12 +22,16 @@ static BOOL iscloaked(HWND hwnd);
 
 static int modclient_getClients(lua_State *L);
 static int modclient_getClient(lua_State *L);
+static int modclient_setFocus(lua_State *L);
 static int modclient_setVisibility(lua_State *L);
+static int modclient_close(lua_State *L);
 
 static const struct  luaL_reg dwmclientmod[] = {
 	{ "getClients", modclient_getClients },
 	{ "getClient", modclient_getClient },
+	{ "setFocus", modclient_setFocus },
 	{ "setVisibility", modclient_setVisibility },
+	{ "close", modclient_close },
 	{ NULL, NULL }
 };
 
@@ -128,6 +132,14 @@ static int modclient_getClient(lua_State *L) {
 }
 
 int
+modclient_setFocus(lua_State *L) {
+	uint32_t id = (uint32_t)luaL_checknumber(L, 1); /* first arg */
+	HWND hwnd = (HWND)id;
+	SetForegroundWindow(hwnd);
+	return 0;
+}
+
+int
 modclient_setVisibility(lua_State *L) {
 	uint32_t id = (uint32_t)luaL_checknumber(L, 1); /* first arg */
 	HWND hwnd = (HWND)id;
@@ -135,6 +147,16 @@ modclient_setVisibility(lua_State *L) {
 	uint32_t visibility = lua_toboolean(L, 2);   /* second arg */
 
 	ShowWindow(hwnd, visibility > 0 ? SW_SHOW : SW_HIDE);
+
+	return 0;
+}
+
+int
+modclient_close(lua_State *L) {
+	uint32_t id = (uint32_t)luaL_checknumber(L, 1); /* first arg */
+	HWND hwnd = (HWND)id;
+
+	SendMessageA(hwnd, WM_CLOSE, 0, 0);
 
 	return 0;
 }
