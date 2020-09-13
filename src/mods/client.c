@@ -26,6 +26,7 @@ static int modclient_show(lua_State *L);
 static int modclient_hide(lua_State *L);
 static int modclient_close(lua_State *L);
 static int modclient_focus(lua_State *L);
+static int modclient_position(lua_State *L);
 
 static const struct  luaL_reg dwmclientmod[] = {
 	{ "getClients", modclient_getClients },
@@ -34,6 +35,7 @@ static const struct  luaL_reg dwmclientmod[] = {
 	{ "hide", modclient_hide },
 	{ "close", modclient_close },
 	{ "focus", modclient_focus },
+	{ "position", modclient_position },
 	{ NULL, NULL }
 };
 
@@ -168,6 +170,46 @@ modclient_focus(lua_State *L) {
 	uint32_t id = (uint32_t)luaL_checknumber(L, 1); /* first arg */
 	HWND hwnd = (HWND)id;
 	SetForegroundWindow(hwnd);
+	return 0;
+}
+
+int
+modclient_position(lua_State *L) {
+	uint32_t argc = lua_gettop(L);
+	if (argc != 2)
+		return luaL_error(L, "expecting exactly 2 arguments");
+
+	if (!lua_isnumber(L, 1))
+		return luaL_error(L, "expecting first argument to be of type number");
+
+	if (!lua_istable(L, 2))
+		return luaL_error(L, "expecting second argument to be of type table");
+
+	uint32_t id = (uint32_t)luaL_checknumber(L, 1); /* first arg */
+	HWND hwnd = (HWND)id;
+
+	lua_getfield(L, 2, "x");
+	if (!lua_isnumber(L, -1))
+		return luaL_error(L, "expecting x to be number");
+	uint32_t x = lua_tonumber(L, -1);
+
+	lua_getfield(L, 2, "y");
+	if (!lua_isnumber(L, -1))
+		return luaL_error(L, "expecting y to be number");
+	uint32_t y = lua_tonumber(L, -1);
+
+	lua_getfield(L, 2, "width");
+	if (!lua_isnumber(L, -1))
+		return luaL_error(L, "expecting width to be number");
+	uint32_t width = lua_tonumber(L, -1);
+
+	lua_getfield(L, 2, "height");
+	if (!lua_isnumber(L, -1))
+		return luaL_error(L, "expecting height to be number");
+	uint32_t height = lua_tonumber(L, -1);
+
+	SetWindowPos(hwnd, NULL, x, y, width, height, 0);
+
 	return 0;
 }
 
