@@ -97,3 +97,14 @@ dwmclient.show(clientid)
 ```lua
 dwmclient.close(clientid)
 ```
+
+## Set position
+
+```lua
+dwmclient.position(clientid, {
+    x = 10,
+    y = 20,
+    width = 200,
+    height = 300,
+})
+```
