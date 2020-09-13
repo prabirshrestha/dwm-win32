@@ -171,7 +171,7 @@ static void setborder(Client *c, bool border);
 static void setvisibility(HWND hwnd, bool visibility);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
-static void setup(HINSTANCE hInstance);
+static void setup(lua_State *L, HINSTANCE hInstance);
 static void setupbar(HINSTANCE hInstance);
 static void showclientinfo(const Arg *arg); 
 static void showhide(Client *c);
