@@ -27,8 +27,6 @@
 #include <lua.h>
 #include <lualib.h>
 
-#include <SDL.h>
-
 #include <windows.h>
 #include <dwmapi.h>
 #include <winuser.h>
@@ -38,6 +36,9 @@
 #include <shellapi.h>
 #include <stdbool.h>
 #include <time.h>
+
+#include "mods/dwm.h"
+#include "mods/display.h"
 
 #define NAME                    L"dwm-win32"     /* Used for window name/class */
 
@@ -170,7 +171,7 @@ static void setborder(Client *c, bool border);
 static void setvisibility(HWND hwnd, bool visibility);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
-static void setup(HINSTANCE hInstance);
+static void setup(lua_State *L, HINSTANCE hInstance);
 static void setupbar(HINSTANCE hInstance);
 static void showclientinfo(const Arg *arg); 
 static void showhide(Client *c);
@@ -190,17 +191,6 @@ static void updategeom(void);
 static void view(const Arg *arg);
 static void zoom(const Arg *arg);
 static bool iscloaked(HWND hwnd);
-
-static void get_exe_filename(char *buf, int size);
-
-static int dwm_openlibs(lua_State *L);
-static int dwm_opendwm(lua_State *L);
-static int f_dwm_log(lua_State *L);
-
-static const struct luaL_reg dwmlib[] = {
-	{ "log", f_dwm_log },
-	{ NULL, NULL }
-};
 
 typedef BOOL (*RegisterShellHookWindowProc) (HWND);
 
@@ -1132,70 +1122,24 @@ setmfact(const Arg *arg) {
     arrange();
 }
 
-void
-get_exe_filename(char *buf, int size) {
-	int len = GetModuleFileName(NULL, buf, size - 1);
-	buf[len] = '\0';
-}
-
-int
-f_dwm_log(lua_State *L) {
-	// TODO: support utf-8
-	const char *msg = luaL_checkstring(L, 1);
-    MessageBox(NULL, msg, "dwm-win32 log", MB_OK);
-	return 0;
-}
-
 int
 dwm_openlibs(lua_State *L) {
 	luaL_openlibs(L);
-	dwm_opendwm(L);
-	return 1;
-}
-
-int
-dwm_opendwm(lua_State *L) {
-	luaL_register(L, "dwm", dwmlib);
-
-	luaL_openlib(L, "dwm", dwmlib, 0);
-
-	lua_pushstring(L, "VERSION");
-	lua_pushstring(L, PROJECT_VER);
-	lua_settable (L, -3);
-
-	lua_pushstring(L, "PLATFORM");
-	lua_pushstring(L, SDL_GetPlatform());
-	lua_settable (L, -3);
-
-	char exename[2048];
-	get_exe_filename(exename, sizeof(exename));
-	lua_pushstring(L, "EXEFILE");
-	lua_pushstring(L, exename);
-	lua_settable (L, -3);
-
+	dwmmod_opendwm(L);
+	dwmmod_opendisplay(L);
 	return 1;
 }
 
 void
 setup(lua_State *L, HINSTANCE hInstance) {
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-	SDL_EnableScreenSaver();
-	SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
-	atexit(SDL_Quit);
-
-#ifdef SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR /* Available since 2.0.8 */
-	SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
-#endif
-#if SDL_VERSION_ATLEAST(2, 0, 5)
-	SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
-#endif
-
 	dwm_openlibs(L);
 
 	/*
 	(void) luaL_dostring(L,
 		"local dwm = require 'dwm'\n"
-		"dwm.log(dwm.EXEFILE)");
+		"local display = require 'dwm.display'\n"
+		"dwm.log(tostring(display.getDisplays()[1].height))"
+		"\n");
 	*/
 
     unsigned int i;

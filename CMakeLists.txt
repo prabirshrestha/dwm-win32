@@ -23,10 +23,13 @@ project(dwm-win32
 
 # set_target_properties(${PROJECT_NAME} PROPERTIES C_STANDARD 11)
 
-add_executable(${PROJECT_NAME} WIN32
-  src/dwm-win32.c)
+file(GLOB MOD_SOURCES "src/mods/*.c")
 
-target_link_libraries(${PROJECT_NAME} lua SDL2-static)
+add_executable(${PROJECT_NAME} WIN32
+  src/dwm-win32.c
+  ${MOD_SOURCES})
+
+target_link_libraries(${PROJECT_NAME} lua)
 
 configure_file(
   "${PROJECT_SOURCE_DIR}/config.h.in"
@@ -49,11 +52,4 @@ add_library(lua STATIC ${lua_sources})
 target_include_directories(lua
   PUBLIC
   $<BUILD_INTERFACE:${lua_SOURCE_DIR}>
-)
-
-set(sdl2_SOURCE_DIR "${PROJECT_SOURCE_DIR}/extern/sdl2")
-add_subdirectory("${sdl2_SOURCE_DIR}")
-target_include_directories(SDL2-static
-  PUBLIC
-  $<BUILD_INTERFACE:${sdl2_SOURCE_DIR}/include>
 )

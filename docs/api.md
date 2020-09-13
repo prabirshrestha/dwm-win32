@@ -33,3 +33,23 @@ dwm.log(dwm.PLATFORM) -- ex: Windows
 local dwm = require 'dwm'
 dwm.log(dwm.EXEFILE) -- ex: c:\apps\dwm-win32.exe
 ```
+
+# display mod
+
+```lua
+local display = require 'dwm.display'
+```
+
+## Get all available displays
+
+```lua
+local moddisplay = require 'dwm.display'
+
+local displays = moddisplay.getDisplays()
+
+local display1 = displays[1]
+local x = display1.x
+local y = display.y
+local width = display.width
+local height = display.height
+```
