@@ -63,7 +63,7 @@ local dwmclient = require 'dwm.client'
 ## Get all clients
 
 ```lua
-for _, clientid = ipairs(dwmclient.getClients()) do
+for _, clientid = ipairs(dwmclient.clients()) do
     -- clientid is a number
 end
 ```
@@ -71,7 +71,7 @@ end
 ## Get client information
 
 ```lua
-local client = dwmclient.getClient(clientid)
+local client = dwmclient.client(clientid)
 ```
 
 ## Set client focus

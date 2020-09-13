@@ -20,8 +20,8 @@ static const char *getclienttitle(HWND hwnd);
 static const char *getclientclassname(HWND hwnd);
 static BOOL iscloaked(HWND hwnd);
 
-static int modclient_getClients(lua_State *L);
-static int modclient_getClient(lua_State *L);
+static int modclient_clients(lua_State *L);
+static int modclient_client(lua_State *L);
 static int modclient_show(lua_State *L);
 static int modclient_hide(lua_State *L);
 static int modclient_close(lua_State *L);
@@ -29,8 +29,8 @@ static int modclient_focus(lua_State *L);
 static int modclient_position(lua_State *L);
 
 static const struct  luaL_reg dwmclientmod[] = {
-	{ "getClients", modclient_getClients },
-	{ "getClient", modclient_getClient },
+	{ "clients", modclient_clients },
+	{ "client", modclient_client },
 	{ "show", modclient_show },
 	{ "hide", modclient_hide },
 	{ "close", modclient_close },
@@ -44,7 +44,7 @@ int dwmmod_openclient(lua_State *L) {
 	return 1;
 }
 
-static int modclient_getClients(lua_State *L) {
+static int modclient_clients(lua_State *L) {
 	lua_newtable(L);
 
 	EnumWindowsState state;
@@ -68,7 +68,7 @@ BOOL CALLBACK EnumWindowsCallback(HWND hwnd, LPARAM lParam) {
 	return TRUE;
 }
 
-static int modclient_getClient(lua_State *L) {
+static int modclient_client(lua_State *L) {
 	uint32_t id = (uint32_t)luaL_checknumber(L, 1); /* first arg */
 	HWND hwnd = (HWND)id;
 
