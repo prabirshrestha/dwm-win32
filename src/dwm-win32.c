@@ -39,6 +39,7 @@
 
 #include "mods/dwm.h"
 #include "mods/display.h"
+#include "mods/client.h"
 
 #define NAME                    L"dwm-win32"     /* Used for window name/class */
 
@@ -1127,6 +1128,7 @@ dwm_openlibs(lua_State *L) {
 	luaL_openlibs(L);
 	dwmmod_opendwm(L);
 	dwmmod_opendisplay(L);
+	dwmmod_openclient(L);
 	return 1;
 }
 

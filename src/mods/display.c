@@ -21,7 +21,7 @@ int dwmmod_opendisplay(lua_State *L) {
 }
 
 static int moddisplay_getDisplays(lua_State *L) {
-	lua_newtable(L); /* bottom table */
+	lua_newtable(L);
 
 	DISPLAY_DEVICE dd;
 	dd.cb = sizeof(dd);
