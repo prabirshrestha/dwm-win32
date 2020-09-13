@@ -45,7 +45,7 @@ local dwmdisplay = require 'dwm.display'
 ```lua
 local dwmdisplay = require 'dwm.display'
 
-local displays = dwmdisplay.getDisplays()
+local displays = dwmdisplay.displays()
 
 local display1 = displays[1]
 local x = display1.x

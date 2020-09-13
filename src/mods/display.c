@@ -8,10 +8,10 @@
 
 #include <windows.h>
 
-static int moddisplay_getDisplays(lua_State *L);
+static int moddisplay_displays(lua_State *L);
 
 static const struct  luaL_reg dwmdisplaymod[] = {
-	{ "getDisplays", moddisplay_getDisplays },
+	{ "displays", moddisplay_displays },
 	{ NULL, NULL }
 };
 
@@ -20,7 +20,7 @@ int dwmmod_opendisplay(lua_State *L) {
 	return 1;
 }
 
-static int moddisplay_getDisplays(lua_State *L) {
+static int moddisplay_displays(lua_State *L) {
 	lua_newtable(L);
 
 	DISPLAY_DEVICE dd;
