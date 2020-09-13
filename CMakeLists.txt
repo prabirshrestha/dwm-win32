@@ -27,6 +27,7 @@ file(GLOB MOD_SOURCES "src/mods/*.c")
 
 add_executable(${PROJECT_NAME} WIN32
   src/dwm-win32.c
+  src/win32_utf8.c
   ${MOD_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} lua)

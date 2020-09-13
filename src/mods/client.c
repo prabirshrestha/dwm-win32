@@ -9,6 +9,8 @@
 #include <windows.h>
 #include <dwmapi.h>
 
+#include "../win32_utf8.h"
+
 typedef struct EnumWindowsState {
 	lua_State *L;
 	size_t index;
@@ -217,22 +219,14 @@ const char
 *getclienttitle(HWND hwnd) {
     static wchar_t buf[500];
     GetWindowTextW(hwnd, buf, sizeof buf);
-
-	static char str[500];
-	wcstombs(str, buf, sizeof(str));
-
-    return str;
+	return (const char*)utf16_to_utf8(buf);
 }
 
 const char
 *getclientclassname(HWND hwnd) {
     static wchar_t buf[500];
     GetClassNameW(hwnd, buf, sizeof buf);
-
-	static char str[500];
-	wcstombs(str, buf, sizeof(str));
-
-    return str;
+	return (const char*)utf16_to_utf8(buf);
 }
 
 BOOL
