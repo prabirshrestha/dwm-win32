@@ -97,6 +97,12 @@ static int modclient_getClient(lua_State *L) {
 	lua_pushboolean(L, iscloaked(hwnd) ? 1 : 0);
 	lua_settable(L, -3);
 
+	DWORD pid = 0;
+	GetWindowThreadProcessId(hwnd, &pid);
+	lua_pushstring(L, "pid");
+	lua_pushnumber(L, (uint32_t)pid);
+	lua_settable(L, -3);
+
 	return 1;
 }
 
