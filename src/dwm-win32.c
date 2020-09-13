@@ -26,6 +26,7 @@
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
+#include "../extern/luabitop/bit.c"
 
 #include <windows.h>
 #include <dwmapi.h>
@@ -1126,9 +1127,12 @@ setmfact(const Arg *arg) {
 int
 dwm_openlibs(lua_State *L) {
 	luaL_openlibs(L);
+	luaopen_bit(L);
+
 	dwmmod_opendwm(L);
 	dwmmod_opendisplay(L);
 	dwmmod_openclient(L);
+
 	return 1;
 }
 
