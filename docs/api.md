@@ -112,6 +112,12 @@ dwmclient.show(clientid)
 dwmclient.close(clientid)
 ```
 
+## Minimize client
+
+```lua
+dwmclient.minimize(clientid)
+```
+
 ## Set position
 
 ```lua

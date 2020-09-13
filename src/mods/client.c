@@ -28,6 +28,7 @@ static int f_show(lua_State *L);
 static int f_hide(lua_State *L);
 static int f_close(lua_State *L);
 static int f_focus(lua_State *L);
+static int f_minimize(lua_State *L);
 static int f_position(lua_State *L);
 
 static const struct  luaL_reg dwmclientmod[] = {
@@ -38,6 +39,7 @@ static const struct  luaL_reg dwmclientmod[] = {
 	{ "close", f_close },
 	{ "focus", f_focus },
 	{ "position", f_position },
+	{ "minimize", f_minimize },
 	{ NULL, NULL }
 };
 
@@ -180,6 +182,14 @@ f_focus(lua_State *L) {
 	uint32_t id = (uint32_t)luaL_checknumber(L, 1); /* first arg */
 	HWND hwnd = (HWND)id;
 	SetForegroundWindow(hwnd);
+	return 0;
+}
+
+int
+f_minimize(lua_State *L) {
+	uint32_t id = (uint32_t)luaL_checknumber(L, 1); /* first arg */
+	HWND hwnd = (HWND)id;
+	SendMessageA(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
 	return 0;
 }
 
