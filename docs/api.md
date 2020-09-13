@@ -43,15 +43,20 @@ local dwmdisplay = require 'dwm.display'
 ## Get all displays
 
 ```lua
-local dwmdisplay = require 'dwm.display'
+for _, displayid = ipairs(dwmdisplay.displays()) do
+   print(displayid)
+end
+```
 
-local displays = dwmdisplay.displays()
+## Get display information
 
-local display1 = displays[1]
-local x = display1.x
-local y = display.y
-local width = display.width
-local height = display.height
+```lua
+local display = dwmdisplay.display(displayid)
+print(display.id)
+print(display.x)
+print(display.y)
+print(display.width)
+print(display.height)
 ```
 
 # client mod
@@ -64,7 +69,7 @@ local dwmclient = require 'dwm.client'
 
 ```lua
 for _, clientid = ipairs(dwmclient.clients()) do
-    -- clientid is a number
+    print(clientid)
 end
 ```
 
@@ -72,6 +77,15 @@ end
 
 ```lua
 local client = dwmclient.client(clientid)
+print(client.visible)
+print(client.title)
+print(client.classname)
+print(client.parent)
+print(client.owner)
+print(client.cloaked)
+print(client.pid) -- process id
+print(client.winstyle)
+print(client.winexstyle)
 ```
 
 ## Set client focus
