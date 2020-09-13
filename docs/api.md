@@ -77,14 +77,19 @@ local client = dwmclient.getClient(clientid)
 ## Set client focus
 
 ```lua
-dwmclient.setFocus(clientid)
+dwmclient.focus(clientid)
 ```
 
-## Set client visiblity
+## Hide client
 
 ```lua
-dwmclient.setVisibility(clientid, false) -- false to hide client
-dwmclient.setVisibility(clientid, true)  -- true to show client
+dwmclient.hide(clientid)
+```
+
+## Show client
+
+```lua
+dwmclient.show(clientid)
 ```
 
 ## Close client
