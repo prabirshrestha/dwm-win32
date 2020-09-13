@@ -131,8 +131,8 @@ dll because it will be loaded into each process address space.
 COMPILING
 =========
 
-dwm-win32 requires `cmake` and `Visual Studio 2019`. You can install the tools by using
-[scoop](https://scoop.sh) as `scoop install cmake`.
+dwm-win32 requires `cmake`, `make`, `clang` and `Visual Studio 2019`. You can install the tools by using
+[scoop](https://scoop.sh) as `scoop install cmake make llvm`.
 
 To compile debug version of dwm-win32 use the following command:
 
