@@ -1149,8 +1149,21 @@ void load_user_script(lua_State *L) {
 		"\n");
 }
 
+static int lua_panic_handler(lua_State *L) {
+	void *ud = NULL;
+	lua_getallocf(L, &ud);
+	if (ud) {
+		const char *msg = NULL;
+		if (lua_type(L, -1) == LUA_TSTRING)
+			msg = lua_tostring(L, -1);
+        die(utf8_to_utf16(msg));
+	}
+	return 0;
+}
+
 void
 setup(lua_State *L, HINSTANCE hInstance) {
+	lua_atpanic(L, &lua_panic_handler);
 	dwm_openlibs(L);
 	load_user_script(L);
 
