@@ -1130,17 +1130,23 @@ dwm_openlibs(lua_State *L) {
 	return 1;
 }
 
+void load_user_script(lua_State *L) {
+	(void) luaL_dostring(L,
+		"local dwm = require 'dwm'\n"
+		"local dwm_config_dir = (os.getenv('XDG_CONFIG_HOME') or os.getenv('HOME') or os.getenv('USERPROFILE')) .. '/.config/dwm'\n"
+		"local init_script = dwm_config_dir .. '/init.lua'\n"
+		"local f = io.open(init_script, 'r')\n"
+		"if f then\n"
+		"  f:close()\n"
+		"  dofile(init_script)\n"
+		"end\n"
+		"\n");
+}
+
 void
 setup(lua_State *L, HINSTANCE hInstance) {
 	dwm_openlibs(L);
-
-	/*
-	(void) luaL_dostring(L,
-		"local dwm = require 'dwm'\n"
-		"local display = require 'dwm.display'\n"
-		"dwm.log(tostring(display.getDisplays()[1].height))"
-		"\n");
-	*/
+	load_user_script(L);
 
     unsigned int i;
 
