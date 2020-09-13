@@ -93,6 +93,14 @@ static int modclient_getClient(lua_State *L) {
 		lua_pushnil(L);
 	lua_settable(L, -3);
 
+	lua_pushstring(L, "owner");
+	HWND owner = GetWindow(hwnd, GW_OWNER);
+	if (owner)
+		lua_pushnumber(L, (uint32_t)owner);
+	else
+		lua_pushnil(L);
+	lua_settable(L, -3);
+
 	lua_pushstring(L, "cloaked");
 	lua_pushboolean(L, iscloaked(hwnd) ? 1 : 0);
 	lua_settable(L, -3);
@@ -103,6 +111,17 @@ static int modclient_getClient(lua_State *L) {
 	lua_pushnumber(L, (uint32_t)pid);
 	lua_settable(L, -3);
 
+	LONG style = GetWindowLong(hwnd, GWL_STYLE);
+	LONG exstyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+
+	lua_pushstring(L, "winstyle");
+	lua_pushnumber(L, style);
+	lua_settable(L, -3);
+
+	lua_pushstring(L, "winexstyle");
+	lua_pushnumber(L, exstyle);
+	lua_settable(L, -3);
+
 	return 1;
 }
 
@@ -111,7 +130,7 @@ const char
     static wchar_t buf[500];
     GetWindowTextW(hwnd, buf, sizeof buf);
 
-	char str[500];
+	static char str[500];
 	wcstombs(str, buf, sizeof(str));
 
     return str;
@@ -122,7 +141,7 @@ const char
     static wchar_t buf[500];
     GetClassNameW(hwnd, buf, sizeof buf);
 
-	char str[500];
+	static char str[500];
 	wcstombs(str, buf, sizeof(str));
 
     return str;
