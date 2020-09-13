@@ -27,8 +27,6 @@
 #include <lua.h>
 #include <lualib.h>
 
-#include <SDL.h>
-
 #include <windows.h>
 #include <dwmapi.h>
 #include <winuser.h>
@@ -1134,18 +1132,6 @@ dwm_openlibs(lua_State *L) {
 
 void
 setup(lua_State *L, HINSTANCE hInstance) {
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-	SDL_EnableScreenSaver();
-	SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
-	atexit(SDL_Quit);
-
-#ifdef SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR /* Available since 2.0.8 */
-	SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
-#endif
-#if SDL_VERSION_ATLEAST(2, 0, 5)
-	SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
-#endif
-
 	dwm_openlibs(L);
 
 	/*
