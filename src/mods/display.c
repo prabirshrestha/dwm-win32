@@ -59,7 +59,7 @@ static int moddisplay_display(lua_State *L) {
 	if (!lua_isstring(L, 1))
 		return luaL_error(L, "expecting first argument to be of type string");
 
-	const char *id = lua_tostring(L, 1); /* first arg */
+	const char *devicekey = lua_tostring(L, 1); /* first arg */
 
 	DISPLAY_DEVICE dd;
 	dd.cb = sizeof(dd);
@@ -76,7 +76,7 @@ static int moddisplay_display(lua_State *L) {
 		newdd.cb = sizeof(DISPLAY_DEVICE);
 		DWORD monitornum = 0;
 		while(EnumDisplayDevices(dd.DeviceName, monitornum, &newdd, 0)) {
-			if (strcmp(newdd.DeviceKey, id) != 0)
+			if (strcmp(newdd.DeviceKey, devicekey) != 0)
 				continue;
 
 			lua_newtable(L);

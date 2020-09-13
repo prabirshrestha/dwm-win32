@@ -9,6 +9,8 @@
 #include <windows.h>
 #include <dwmapi.h>
 
+#include "../win32_utf8.h"
+
 typedef struct EnumWindowsState {
 	lua_State *L;
 	size_t index;
@@ -87,13 +89,21 @@ static int modclient_client(lua_State *L) {
 	lua_pushboolean(L, IsWindowVisible(hwnd) ? 1 : 0);
 	lua_settable(L, -3);
 
-	lua_pushstring(L, "title");
-	lua_pushstring(L, getclienttitle(hwnd));
-	lua_settable(L, -3);
+	const char *clienttitle = getclienttitle(hwnd);
+	if (clienttitle) {
+		lua_pushstring(L, "title");
+		lua_pushstring(L, getclienttitle(hwnd));
+		lua_settable(L, -3);
+		free(clienttitle);
+	}
 
-	lua_pushstring(L, "classname");
-	lua_pushstring(L, getclientclassname(hwnd));
-	lua_settable(L, -3);
+	const char *classname = getclientclassname(hwnd);
+	if (classname) {
+		lua_pushstring(L, "classname");
+		lua_pushstring(L, getclientclassname(hwnd));
+		lua_settable(L, -3);
+		free(classname);
+	}
 
 	lua_pushstring(L, "parent");
 	HWND parent = GetParent(hwnd);
@@ -217,22 +227,14 @@ const char
 *getclienttitle(HWND hwnd) {
     static wchar_t buf[500];
     GetWindowTextW(hwnd, buf, sizeof buf);
-
-	static char str[500];
-	wcstombs(str, buf, sizeof(str));
-
-    return str;
+	return (const char*)utf16_to_utf8(buf);
 }
 
 const char
 *getclientclassname(HWND hwnd) {
     static wchar_t buf[500];
     GetClassNameW(hwnd, buf, sizeof buf);
-
-	static char str[500];
-	wcstombs(str, buf, sizeof(str));
-
-    return str;
+	return (const char*)utf16_to_utf8(buf);
 }
 
 BOOL
