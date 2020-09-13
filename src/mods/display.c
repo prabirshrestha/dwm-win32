@@ -8,12 +8,12 @@
 
 #include <windows.h>
 
-static int moddisplay_displays(lua_State *L);
-static int moddisplay_display(lua_State *L);
+static int f_displays(lua_State *L);
+static int f_display(lua_State *L);
 
 static const struct  luaL_reg dwmdisplaymod[] = {
-	{ "displays", moddisplay_displays },
-	{ "display", moddisplay_display },
+	{ "displays", f_displays },
+	{ "display", f_display },
 	{ NULL, NULL }
 };
 
@@ -22,15 +22,13 @@ int dwmmod_opendisplay(lua_State *L) {
 	return 1;
 }
 
-static int moddisplay_displays(lua_State *L) {
+static int f_displays(lua_State *L) {
 	lua_newtable(L);
 
 	DISPLAY_DEVICE dd;
 	dd.cb = sizeof(dd);
 
 	DWORD devicenum = 0;
-
-	DEVMODE dm;
 
 	uint32_t index = 0;
 
@@ -51,7 +49,7 @@ static int moddisplay_displays(lua_State *L) {
 	return 1; /* number of results */
 }
 
-static int moddisplay_display(lua_State *L) {
+static int f_display(lua_State *L) {
 	uint32_t argc = lua_gettop(L);
 	if (argc != 1)
 		return luaL_error(L, "expecting exactly 1 argument");

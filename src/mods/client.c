@@ -22,22 +22,22 @@ static const char *getclienttitle(HWND hwnd);
 static const char *getclientclassname(HWND hwnd);
 static BOOL iscloaked(HWND hwnd);
 
-static int modclient_clients(lua_State *L);
-static int modclient_client(lua_State *L);
-static int modclient_show(lua_State *L);
-static int modclient_hide(lua_State *L);
-static int modclient_close(lua_State *L);
-static int modclient_focus(lua_State *L);
-static int modclient_position(lua_State *L);
+static int f_clients(lua_State *L);
+static int f_client(lua_State *L);
+static int f_show(lua_State *L);
+static int f_hide(lua_State *L);
+static int f_close(lua_State *L);
+static int f_focus(lua_State *L);
+static int f_position(lua_State *L);
 
 static const struct  luaL_reg dwmclientmod[] = {
-	{ "clients", modclient_clients },
-	{ "client", modclient_client },
-	{ "show", modclient_show },
-	{ "hide", modclient_hide },
-	{ "close", modclient_close },
-	{ "focus", modclient_focus },
-	{ "position", modclient_position },
+	{ "clients", f_clients },
+	{ "client", f_client },
+	{ "show", f_show },
+	{ "hide", f_hide },
+	{ "close", f_close },
+	{ "focus", f_focus },
+	{ "position", f_position },
 	{ NULL, NULL }
 };
 
@@ -46,7 +46,7 @@ int dwmmod_openclient(lua_State *L) {
 	return 1;
 }
 
-static int modclient_clients(lua_State *L) {
+static int f_clients(lua_State *L) {
 	lua_newtable(L);
 
 	EnumWindowsState state;
@@ -70,7 +70,7 @@ BOOL CALLBACK EnumWindowsCallback(HWND hwnd, LPARAM lParam) {
 	return TRUE;
 }
 
-static int modclient_client(lua_State *L) {
+static int f_client(lua_State *L) {
 	uint32_t id = (uint32_t)luaL_checknumber(L, 1); /* first arg */
 	HWND hwnd = (HWND)id;
 
@@ -146,7 +146,7 @@ static int modclient_client(lua_State *L) {
 }
 
 int
-modclient_show(lua_State *L) {
+f_show(lua_State *L) {
 	uint32_t id = (uint32_t)luaL_checknumber(L, 1); /* first arg */
 	HWND hwnd = (HWND)id;
 
@@ -156,7 +156,7 @@ modclient_show(lua_State *L) {
 }
 
 int
-modclient_hide(lua_State *L) {
+f_hide(lua_State *L) {
 	uint32_t id = (uint32_t)luaL_checknumber(L, 1); /* first arg */
 	HWND hwnd = (HWND)id;
 
@@ -166,7 +166,7 @@ modclient_hide(lua_State *L) {
 }
 
 int
-modclient_close(lua_State *L) {
+f_close(lua_State *L) {
 	uint32_t id = (uint32_t)luaL_checknumber(L, 1); /* first arg */
 	HWND hwnd = (HWND)id;
 
@@ -176,7 +176,7 @@ modclient_close(lua_State *L) {
 }
 
 int
-modclient_focus(lua_State *L) {
+f_focus(lua_State *L) {
 	uint32_t id = (uint32_t)luaL_checknumber(L, 1); /* first arg */
 	HWND hwnd = (HWND)id;
 	SetForegroundWindow(hwnd);
@@ -184,7 +184,7 @@ modclient_focus(lua_State *L) {
 }
 
 int
-modclient_position(lua_State *L) {
+f_position(lua_State *L) {
 	uint32_t argc = lua_gettop(L);
 	if (argc != 2)
 		return luaL_error(L, "expecting exactly 2 arguments");
