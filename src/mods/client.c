@@ -89,13 +89,21 @@ static int modclient_client(lua_State *L) {
 	lua_pushboolean(L, IsWindowVisible(hwnd) ? 1 : 0);
 	lua_settable(L, -3);
 
-	lua_pushstring(L, "title");
-	lua_pushstring(L, getclienttitle(hwnd));
-	lua_settable(L, -3);
+	const char *clienttitle = getclienttitle(hwnd);
+	if (clienttitle) {
+		lua_pushstring(L, "title");
+		lua_pushstring(L, getclienttitle(hwnd));
+		lua_settable(L, -3);
+		free(clienttitle);
+	}
 
-	lua_pushstring(L, "classname");
-	lua_pushstring(L, getclientclassname(hwnd));
-	lua_settable(L, -3);
+	const char *classname = getclientclassname(hwnd);
+	if (classname) {
+		lua_pushstring(L, "classname");
+		lua_pushstring(L, getclientclassname(hwnd));
+		lua_settable(L, -3);
+		free(classname);
+	}
 
 	lua_pushstring(L, "parent");
 	HWND parent = GetParent(hwnd);

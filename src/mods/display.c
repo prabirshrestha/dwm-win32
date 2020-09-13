@@ -8,8 +8,6 @@
 
 #include <windows.h>
 
-#include "../win32_utf8.h"
-
 static int moddisplay_displays(lua_State *L);
 static int moddisplay_display(lua_State *L);
 
