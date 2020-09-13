@@ -18,14 +18,15 @@ typedef struct EnumWindowsState {
 
 BOOL CALLBACK EnumWindowsCallback(HWND hwnd, LPARAM lParam);
 
-static const char *getclienttitle(HWND hwnd);
-static const char *getclientclassname(HWND hwnd);
+static char *getclienttitle(HWND hwnd);
+static char *getclientclassname(HWND hwnd);
 static BOOL iscloaked(HWND hwnd);
 
 static int f_clients(lua_State *L);
 static int f_client(lua_State *L);
 static int f_show(lua_State *L);
 static int f_hide(lua_State *L);
+static int f_border(lua_State *L);
 static int f_close(lua_State *L);
 static int f_focus(lua_State *L);
 static int f_maximize(lua_State *L);
@@ -37,6 +38,7 @@ static const struct  luaL_reg dwmclientmod[] = {
 	{ "client", f_client },
 	{ "show", f_show },
 	{ "hide", f_hide },
+	{ "border", f_border },
 	{ "close", f_close },
 	{ "focus", f_focus },
 	{ "maximize", f_maximize },
@@ -93,7 +95,7 @@ static int f_client(lua_State *L) {
 	lua_pushboolean(L, IsWindowVisible(hwnd) ? 1 : 0);
 	lua_settable(L, -3);
 
-	const char *clienttitle = getclienttitle(hwnd);
+	char *clienttitle = getclienttitle(hwnd);
 	if (clienttitle) {
 		lua_pushstring(L, "title");
 		lua_pushstring(L, getclienttitle(hwnd));
@@ -101,7 +103,7 @@ static int f_client(lua_State *L) {
 		free(clienttitle);
 	}
 
-	const char *classname = getclientclassname(hwnd);
+	char *classname = getclientclassname(hwnd);
 	if (classname) {
 		lua_pushstring(L, "classname");
 		lua_pushstring(L, getclientclassname(hwnd));
@@ -165,6 +167,33 @@ f_hide(lua_State *L) {
 	HWND hwnd = (HWND)id;
 
 	ShowWindow(hwnd, SW_HIDE);
+
+	return 0;
+}
+
+int
+f_border(lua_State *L) {
+	uint32_t argc = lua_gettop(L);
+	if (argc != 2)
+		return luaL_error(L, "expecting exactly 2 arguments");
+
+	if (!lua_isnumber(L, 1))
+		return luaL_error(L, "expecting first argument to be of type number");
+
+	if (!lua_isboolean(L, 2))
+		return luaL_error(L, "expecting second argument to be of type boolean");
+
+	uint32_t id = (uint32_t)lua_tonumber(L, 1); /* first arg */
+	HWND hwnd = (HWND)id;
+
+	uint32_t border = (uint32_t)lua_toboolean(L, 2); /* second args*/
+
+	if (border > 0)
+		SetWindowLong(hwnd, GWL_STYLE, (GetWindowLong(hwnd, GWL_STYLE) | (WS_CAPTION | WS_SIZEBOX)));
+	else {
+		SetWindowLong(hwnd, GWL_STYLE, (GetWindowLong(hwnd, GWL_STYLE) & ~(WS_CAPTION | WS_SIZEBOX)) | WS_BORDER | WS_THICKFRAME);
+		SetWindowLong(hwnd, GWL_EXSTYLE, (GetWindowLong(hwnd, GWL_EXSTYLE) & ~(WS_EX_CLIENTEDGE | WS_EX_WINDOWEDGE)));
+	}
 
 	return 0;
 }
@@ -243,18 +272,18 @@ f_position(lua_State *L) {
 	return 0;
 }
 
-const char
+char
 *getclienttitle(HWND hwnd) {
     static wchar_t buf[500];
     GetWindowTextW(hwnd, buf, sizeof buf);
-	return (const char*)utf16_to_utf8(buf);
+	return (char*)utf16_to_utf8(buf);
 }
 
-const char
+char
 *getclientclassname(HWND hwnd) {
     static wchar_t buf[500];
     GetClassNameW(hwnd, buf, sizeof buf);
-	return (const char*)utf16_to_utf8(buf);
+	return (char*)utf16_to_utf8(buf);
 }
 
 BOOL

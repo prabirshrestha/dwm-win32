@@ -124,6 +124,13 @@ dwmclient.maximize(clientid)
 dwmclient.minimize(clientid)
 ```
 
+## Set border
+
+```lua
+dwmclient.border(clientid, true)  -- show border
+dwmclient.border(clientid, false) -- hide border
+```
+
 ## Set position
 
 ```lua
