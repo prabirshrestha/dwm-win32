@@ -112,6 +112,12 @@ dwmclient.show(clientid)
 dwmclient.close(clientid)
 ```
 
+## Maximize client
+
+```lua
+dwmclient.maximize(clientid)
+```
+
 ## Minimize client
 
 ```lua
