@@ -39,6 +39,7 @@
 #include <time.h>
 
 #include "mods/dwm.h"
+#include "mods/eventemitter.h"
 #include "mods/display.h"
 #include "mods/client.h"
 
@@ -1130,6 +1131,7 @@ dwm_openlibs(lua_State *L) {
 	luaopen_bit(L);
 
 	dwmmod_opendwm(L);
+	dwmmod_openeventemitter(L);
 	dwmmod_opendisplay(L);
 	dwmmod_openclient(L);
 
