@@ -153,5 +153,5 @@ end
 local eventemitter = EventEmitter.new()
 eventemitter:on('message', onmessage)       -- subscribe
 eventemitter:emit('message', 'hello world') -- send message
-eventemitter:off('messag', onmessage)       -- unsubscribe
+eventemitter:off('message', onmessage)       -- unsubscribe
 ```
