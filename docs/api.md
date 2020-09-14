@@ -141,3 +141,17 @@ dwmclient.position(clientid, {
     height = 300,
 })
 ```
+
+# Event Emitter
+
+```lua
+local EventEmitter = require 'dwm.eventemitter'
+local function onmessage(msg)
+   print(msg)
+end
+
+local eventemitter = EventEmitter.new()
+eventemitter:on('message', onmessage)       -- subscribe
+eventemitter:emit('message', 'hello world') -- send message
+eventemitter:off('message', onmessage)      -- unsubscribe
+```
