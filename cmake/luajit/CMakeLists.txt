@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.0)
+
+if(LUAJIT_DIR)
+  project(luajit)
+  include(LuaJIT.cmake)
+  set(LUA_TARGET luajit PARENT_SCOPE)
+  set(LUA_LIBRARIES libluajit PARENT_SCOPE)
+elseif(LUA_DIR)
+  project(lua)
+  include(lua.cmake)
+  set(LUA_TARGET lua PARENT_SCOPE)
+  set(LUA_LIBRARIES liblua PARENT_SCOPE)
+else()
+  message(FATAL_ERROR
+    "Must set LUAJIT_DIR or LUA_DIR to build with CMake")
+endif()
