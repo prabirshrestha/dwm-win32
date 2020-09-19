@@ -43,7 +43,7 @@ Usage
   dwm uses a modifier key by default this is `ALT`.
 
 
-  `MOD + b`  Toggles bar on and off.
+  `MOD + Control + b`  Toggles bar on and off.
 
   `MOD + e` Toogles windows explorer and taskbar on and off.
 
