@@ -9,7 +9,7 @@ static void get_exe_filename(char *buf, int size);
 
 static int moddwm_f_log(lua_State *L);
 
-static const struct luaL_reg dwmmod[] = {
+static const luaL_Reg dwmmod[] = {
 	{ "log", moddwm_f_log },
 	{ NULL, NULL }
 };

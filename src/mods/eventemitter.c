@@ -5,7 +5,7 @@
 #include <lualib.h>
 #include <windows.h>
 
-static const struct luaL_reg eventemittermod[] = {
+static const luaL_Reg eventemittermod[] = {
 	{ NULL, NULL }
 };
 

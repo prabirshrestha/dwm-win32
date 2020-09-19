@@ -33,7 +33,7 @@ static int f_maximize(lua_State *L);
 static int f_minimize(lua_State *L);
 static int f_position(lua_State *L);
 
-static const struct  luaL_reg dwmclientmod[] = {
+static const luaL_Reg dwmclientmod[] = {
 	{ "clients", f_clients },
 	{ "client", f_client },
 	{ "show", f_show },
