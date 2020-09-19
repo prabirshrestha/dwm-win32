@@ -21,6 +21,7 @@ if(CMAKE_CROSSCOMPILING AND ${CMAKE_HOST_SYSTEM_NAME} STREQUAL Darwin)
   include(${CMAKE_CURRENT_LIST_DIR}/Utils/Darwin.wine.cmake)
 endif()
 
+set(LUAJIT_BUILD_EXE OFF CACHE BOOL "Enable luajit exe build")
 set(LUAJIT_BUILD_ALAMG OFF CACHE BOOL "Enable alamg build mode")
 set(LUAJIT_DISABLE_GC64 OFF CACHE BOOL "Disable GC64 mode for x64")
 set(LUA_MULTILIB "lib" CACHE PATH "The name of lib directory.")
@@ -483,18 +484,6 @@ endif()
 
 target_compile_options(libluajit PRIVATE ${LJ_COMPILE_OPTIONS})
 
-# Build the luajit binary
-add_executable(luajit ${LJ_DIR}/luajit.c)
-target_link_libraries(luajit libluajit)
-if(APPLE AND NOT IOS)
-  target_link_libraries(luajit "-pagezero_size 10000" "-image_base 100000000")
-endif()
-if(${CMAKE_SYSTEM_NAME} MATCHES "(Open|Free|Net)BSD")
-  target_link_libraries(luajit c++abi pthread)
-endif()
-target_compile_definitions(luajit PRIVATE ${LJ_DEFINITIONS})
-file(COPY ${LJ_DIR}/jit DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 set(luajit_headers
   ${LJ_DIR}/lauxlib.h
   ${LJ_DIR}/lua.h
@@ -506,4 +495,18 @@ install(TARGETS libluajit
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-install(TARGETS luajit DESTINATION "${CMAKE_INSTALL_BINDIR}")
+if (LUAJIT_BUILD_EXE)
+  # Build the luajit binary
+  add_executable(luajit ${LJ_DIR}/luajit.c)
+  target_link_libraries(luajit libluajit)
+  if(APPLE AND NOT IOS)
+    target_link_libraries(luajit "-pagezero_size 10000" "-image_base 100000000")
+  endif()
+  if(${CMAKE_SYSTEM_NAME} MATCHES "(Open|Free|Net)BSD")
+    target_link_libraries(luajit c++abi pthread)
+  endif()
+  target_compile_definitions(luajit PRIVATE ${LJ_DEFINITIONS})
+  file(COPY ${LJ_DIR}/jit DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+  install(TARGETS luajit DESTINATION "${CMAKE_INSTALL_BINDIR}")
+endif()
