@@ -10,7 +10,7 @@ static const luaL_Reg eventemittermod[] = {
 };
 
 int
-dwmmod_openeventemitter(lua_State *L) {
+luaopen_dwm_eventemitter(lua_State *L) {
 	luaL_register(L, "dwm.eventemitter", eventemittermod);
 
 	(void) luaL_dostring(L, 

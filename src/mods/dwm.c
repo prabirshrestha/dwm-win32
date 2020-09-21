@@ -15,7 +15,7 @@ static const luaL_Reg dwmmod[] = {
 };
 
 int
-dwmmod_opendwm(lua_State *L) {
+luaopen_dwm(lua_State *L) {
 	luaL_register(L, "dwm", dwmmod);
 
 	luaL_openlib(L, "dwm", dwmmod, 0);

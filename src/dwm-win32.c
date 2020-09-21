@@ -1135,10 +1135,10 @@ luaopen_dwmlibs(lua_State *L) {
 	luaopen_bit(L);
 #endif
 
-	dwmmod_opendwm(L);
-	dwmmod_openeventemitter(L);
-	dwmmod_opendisplay(L);
-	dwmmod_openclient(L);
+	luaopen_dwm(L);
+	luaopen_dwm_eventemitter(L);
+	luaopen_dwm_display(L);
+	luaopen_dwm_client(L);
 
 	return 1;
 }

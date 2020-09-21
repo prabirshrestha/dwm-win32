@@ -5,6 +5,6 @@
 #include <lua.h>
 #include <lualib.h>
 
-int dwmmod_opendwm(lua_State *L);
+int luaopen_dwm(lua_State *L);
 
 #endif

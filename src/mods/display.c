@@ -17,7 +17,8 @@ static const luaL_Reg dwmdisplaymod[] = {
 	{ NULL, NULL }
 };
 
-int dwmmod_opendisplay(lua_State *L) {
+int
+luaopen_dwm_display(lua_State *L) {
 	luaL_register(L, "dwm.display", dwmdisplaymod);
 	return 1;
 }

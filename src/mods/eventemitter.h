@@ -5,6 +5,6 @@
 #include <lua.h>
 #include <lualib.h>
 
-int dwmmod_openeventemitter(lua_State *L);
+int luaopen_dwm_eventemitter(lua_State *L);
 
 #endif
