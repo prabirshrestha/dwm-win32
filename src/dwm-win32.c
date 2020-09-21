@@ -26,6 +26,7 @@
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
+#include <compat-5.3.h>
 #ifndef LUAJIT
 #include "../extern/luabitop/bit.c"
 #endif
