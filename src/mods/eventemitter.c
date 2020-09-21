@@ -7,7 +7,7 @@
 
 int
 luaopen_dwm_eventemitter(lua_State *L) {
-	struct luaL_Reg lib[] = {
+	const luaL_Reg lib[] = {
 		{ NULL, NULL }
 	};
 

@@ -36,7 +36,7 @@ static int f_position(lua_State *L);
 
 int
 luaopen_dwm_client(lua_State *L) {
-	struct luaL_Reg lib[] = {
+	const luaL_Reg lib[] = {
 		{ "clients", f_clients },
 		{ "client", f_client },
 		{ "show", f_show },

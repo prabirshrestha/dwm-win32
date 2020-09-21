@@ -14,7 +14,7 @@ static int f_display(lua_State *L);
 
 int
 luaopen_dwm_display(lua_State *L) {
-	struct luaL_Reg lib[] = {
+	const luaL_Reg lib[] = {
 		{ "displays", f_displays },
 		{ "display", f_display },
 		{ NULL, NULL }

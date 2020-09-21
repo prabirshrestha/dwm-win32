@@ -13,7 +13,7 @@ static void get_exe_filename(char *buf, int size);
 
 int
 luaopen_dwm(lua_State *L) {
-	struct luaL_Reg lib[] = {
+	const luaL_Reg lib[] = {
 		{ "log", f_log },
 		{ NULL, NULL }
 	};
