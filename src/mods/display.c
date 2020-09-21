@@ -5,21 +5,23 @@
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
+#include <compat-5.3.h>
 
 #include <windows.h>
 
 static int f_displays(lua_State *L);
 static int f_display(lua_State *L);
 
-static const luaL_Reg dwmdisplaymod[] = {
-	{ "displays", f_displays },
-	{ "display", f_display },
-	{ NULL, NULL }
-};
-
 int
 luaopen_dwm_display(lua_State *L) {
-	luaL_register(L, "dwm.display", dwmdisplaymod);
+	struct luaL_Reg lib[] = {
+		{ "displays", f_displays },
+		{ "display", f_display },
+		{ NULL, NULL }
+	};
+
+	luaL_newlib(L, lib);
+
 	return 1;
 }
 

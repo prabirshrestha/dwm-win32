@@ -3,15 +3,15 @@
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
-#include <windows.h>
-
-static const luaL_Reg eventemittermod[] = {
-	{ NULL, NULL }
-};
+#include <compat-5.3.h>
 
 int
 luaopen_dwm_eventemitter(lua_State *L) {
-	luaL_register(L, "dwm.eventemitter", eventemittermod);
+	struct luaL_Reg lib[] = {
+		{ NULL, NULL }
+	};
+
+	luaL_newlib(L, lib);
 
 	(void) luaL_dostring(L, 
 		"local M = require 'dwm.eventemitter'\n"

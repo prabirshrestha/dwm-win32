@@ -5,6 +5,7 @@
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
+#include <compat-5.3.h>
 
 #include <windows.h>
 #include <dwmapi.h>
@@ -33,23 +34,24 @@ static int f_maximize(lua_State *L);
 static int f_minimize(lua_State *L);
 static int f_position(lua_State *L);
 
-static const luaL_Reg dwmclientmod[] = {
-	{ "clients", f_clients },
-	{ "client", f_client },
-	{ "show", f_show },
-	{ "hide", f_hide },
-	{ "border", f_border },
-	{ "close", f_close },
-	{ "focus", f_focus },
-	{ "maximize", f_maximize },
-	{ "minimize", f_minimize },
-	{ "position", f_position },
-	{ NULL, NULL }
-};
-
 int
 luaopen_dwm_client(lua_State *L) {
-	luaL_register(L, "dwm.client", dwmclientmod);
+	struct luaL_Reg lib[] = {
+		{ "clients", f_clients },
+		{ "client", f_client },
+		{ "show", f_show },
+		{ "hide", f_hide },
+		{ "border", f_border },
+		{ "close", f_close },
+		{ "focus", f_focus },
+		{ "maximize", f_maximize },
+		{ "minimize", f_minimize },
+		{ "position", f_position },
+		{ NULL, NULL }
+	};
+
+	luaL_newlib(L, lib);
+
 	return 1;
 }
 

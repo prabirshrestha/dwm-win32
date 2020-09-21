@@ -26,6 +26,7 @@
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
+#include <compat-5.3.h>
 #ifndef LUAJIT
 #include "../extern/luabitop/bit.c"
 #endif
@@ -1135,10 +1136,10 @@ luaopen_dwmlibs(lua_State *L) {
 	luaopen_bit(L);
 #endif
 
-	luaopen_dwm(L);
-	luaopen_dwm_eventemitter(L);
-	luaopen_dwm_display(L);
-	luaopen_dwm_client(L);
+	luaL_requiref(L, "dwm", luaopen_dwm, 0);
+	luaL_requiref(L, "dwm.eventemitter", luaopen_dwm_eventemitter, 0);
+	luaL_requiref(L, "dwm.display", luaopen_dwm_display, 0);
+	luaL_requiref(L, "dwm.client", luaopen_dwm_client, 0);
 
 	return 1;
 }
