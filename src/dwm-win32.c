@@ -26,7 +26,6 @@
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
-#include <compat-5.3.h>
 #ifndef LUAJIT
 #include "../extern/luabitop/bit.c"
 #endif
@@ -1129,7 +1128,7 @@ setmfact(const Arg *arg) {
 }
 
 int
-dwm_openlibs(lua_State *L) {
+luaopen_dwmlibs(lua_State *L) {
 	luaL_openlibs(L);
 
 #ifndef LUAJIT
@@ -1172,7 +1171,7 @@ static int lua_panic_handler(lua_State *L) {
 void
 setup(lua_State *L, HINSTANCE hInstance) {
 	lua_atpanic(L, &lua_panic_handler);
-	dwm_openlibs(L);
+	luaopen_dwmlibs(L);
 	load_user_script(L);
 
     unsigned int i;
