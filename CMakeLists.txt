@@ -33,8 +33,10 @@ add_executable(${PROJECT_NAME} WIN32
 if (USE_LUAJIT)
   target_link_libraries(${PROJECT_NAME} libluajit)
 else()
-  target_link_libraries(${PROJECT_NAME} lua)
+  target_link_libraries(${PROJECT_NAME} liblua)
 endif()
+
+target_link_libraries(${PROJECT_NAME} luacompat53)
 
 configure_file(
   "${PROJECT_SOURCE_DIR}/config.h.in"
@@ -50,6 +52,19 @@ if (NOT MSVC)
   )
 endif()
 
+set(luacompat53_SOURCE_DIR "${PROJECT_SOURCE_DIR}/extern/lua-compat-5.3")
+FILE(GLOB luacompat53_sources ${luacompat53_SOURCE_DIR}/*.c)
+add_library(luacompat53 STATIC ${luacompat53_sources})
+target_include_directories(luacompat53
+  PUBLIC
+  $<BUILD_INTERFACE:${luacompat53_SOURCE_DIR}>
+)
+if (USE_LUAJIT)
+  target_link_libraries(luacompat53 libluajit)
+else()
+  target_link_libraries(luacompat53 liblua)
+endif()
+
 if (USE_LUAJIT)
   set(LUAJIT_ENABLE_LUA52COMPAT ON)
   set(LUAJIT_BUILD_ALAMG ON)
@@ -63,8 +78,8 @@ else()
   set(lua_SOURCE_DIR "${PROJECT_SOURCE_DIR}/extern/lua/src")
   FILE(GLOB lua_sources ${lua_SOURCE_DIR}/*.c)
   list(REMOVE_ITEM lua_sources "${lua_SOURCE_DIR}/lua.c" "${lua_SOURCE_DIR}/luac.c")
-  add_library(lua STATIC ${lua_sources})
-  target_include_directories(lua
+  add_library(liblua STATIC ${lua_sources})
+  target_include_directories(liblua
     PUBLIC
     $<BUILD_INTERFACE:${lua_SOURCE_DIR}>
   )
