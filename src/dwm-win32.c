@@ -1129,7 +1129,7 @@ setmfact(const Arg *arg) {
 }
 
 int
-luaopen_dwmlibs(lua_State *L) {
+luaopen_dwmlibs(lua_State *L, DwmState* state) {
 	luaL_openlibs(L);
 
 #ifndef LUAJIT
@@ -1137,6 +1137,7 @@ luaopen_dwmlibs(lua_State *L) {
 #endif
 
 	luaL_requiref(L, "dwm", luaopen_dwm, 0);
+	dwm_setstate(L, state);
 	luaL_requiref(L, "dwm.eventemitter", luaopen_dwm_eventemitter, 0);
 	luaL_requiref(L, "dwm.display", luaopen_dwm_display, 0);
 	luaL_requiref(L, "dwm.client", luaopen_dwm_client, 0);
@@ -1172,7 +1173,9 @@ static int lua_panic_handler(lua_State *L) {
 void
 setup(lua_State *L, HINSTANCE hInstance) {
 	lua_atpanic(L, &lua_panic_handler);
-	luaopen_dwmlibs(L);
+	DwmState *state = (DwmState*)malloc(sizeof(DwmState));
+	state->hInstance = hInstance;
+	luaopen_dwmlibs(L, state);
 	load_user_script(L);
 
     unsigned int i;

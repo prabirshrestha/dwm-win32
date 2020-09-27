@@ -50,3 +50,32 @@ get_exe_filename(char *buf, int size) {
 	int len = GetModuleFileName(NULL, buf, size - 1);
 	buf[len] = '\0';
 }
+
+void
+dwm_setstate(lua_State *L, DwmState *state) {
+	lua_getglobal(L, "require");
+	lua_pushstring(L, "dwm");
+	lua_call(L, 1, 1);
+
+	lua_pushstring(L, "_state");
+	lua_pushlightuserdata(L, state);
+	lua_settable (L, -3);
+
+	lua_pop(L, 1); /* pop require 'dwm' */
+}
+
+DwmState*
+dwm_getstate(lua_State *L) {
+	/* require 'dwm' */
+	lua_getglobal(L, "require");
+	lua_pushstring(L, "dwm");
+	lua_call(L, 1, 1);
+
+	/* get dwm._state value */
+	lua_getfield(L, -1, "_state");
+	DwmState *state = (DwmState*)lua_touserdata(L, -1);
+	lua_pop(L, 1); /* pop getfield */
+
+	lua_pop(L, 1); /* pop require 'dwm' */
+	return state;
+}
