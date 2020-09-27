@@ -45,6 +45,7 @@
 #include "mods/eventemitter.h"
 #include "mods/display.h"
 #include "mods/client.h"
+#include "mods/hotkey.h"
 
 #define NAME                    L"dwm-win32"     /* Used for window name/class */
 
@@ -1141,6 +1142,7 @@ luaopen_dwmlibs(lua_State *L, DwmState* state) {
 	luaL_requiref(L, "dwm.eventemitter", luaopen_dwm_eventemitter, 0);
 	luaL_requiref(L, "dwm.display", luaopen_dwm_display, 0);
 	luaL_requiref(L, "dwm.client", luaopen_dwm_client, 0);
+	luaL_requiref(L, "dwm.hotkey", luaopen_dwm_hotkey, 0);
 
 	return 1;
 }
