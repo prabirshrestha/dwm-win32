@@ -69,6 +69,7 @@
 #define die(...) if (TRUE) { eprint(true, __VA_ARGS__); eprint(true, L"Win32 Last Error: %d", GetLastError()); cleanup(NULL); exit(EXIT_FAILURE); }
 
 
+#define EVENT_OBJECT_CLOAKED 0x8017
 #define EVENT_OBJECT_UNCLOAKED 0x8018
 
 enum { CurNormal, CurResize, CurMove, CurLast };        /* cursor */
@@ -1033,16 +1034,28 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 void CALLBACK
 wineventproc(HWINEVENTHOOK heventhook, DWORD event, HWND hwnd, LONG object, LONG child, DWORD eventthread, DWORD eventtime_ms) {
-    if (object != OBJID_WINDOW || child != CHILDID_SELF || event != EVENT_OBJECT_UNCLOAKED || hwnd == NULL)
+    if (object != OBJID_WINDOW || child != CHILDID_SELF || hwnd == NULL)
         return;
 
     Client *c = getclient(hwnd);
 
-    if (!c && ismanageable(hwnd)) {
-        c = manage(hwnd);
-        managechildwindows(c);
-        setselected(c);
-        arrange();
+    switch (event)
+    {
+    case EVENT_OBJECT_UNCLOAKED:
+        if (!c && ismanageable(hwnd)) {
+            c = manage(hwnd);
+            managechildwindows(c);
+            setselected(c);
+            arrange();
+        }
+
+        break;
+
+    case EVENT_OBJECT_CLOAKED:
+        if (c)
+            unmanage(c);
+
+        break;
     }
 }
 
@@ -1244,7 +1257,7 @@ setup(lua_State *L, HINSTANCE hInstance) {
     /* Grab a dynamic id for the SHELLHOOK message to be used later */
     shellhookid = RegisterWindowMessageW(L"SHELLHOOK");
 
-    wineventhook = SetWinEventHook(EVENT_OBJECT_UNCLOAKED, EVENT_OBJECT_UNCLOAKED, NULL, wineventproc, 0, 0, WINEVENT_OUTOFCONTEXT);
+    wineventhook = SetWinEventHook(EVENT_OBJECT_CLOAKED, EVENT_OBJECT_UNCLOAKED, NULL, wineventproc, 0, 0, WINEVENT_OUTOFCONTEXT);
 
     if (!wineventhook)
         die(L"Could not SetWinEventHook");

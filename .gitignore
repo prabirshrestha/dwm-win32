@@ -12,3 +12,5 @@ tags
 .clangd/
 build/
 compile_commands.json
+
+dwm-win32.log
