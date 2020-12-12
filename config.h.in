@@ -115,6 +115,7 @@ static Key keys[] = {
     { MODKEY|MOD_SHIFT,             VK_SPACE,  togglefloating,      {0} },
     { MODKEY,                       'N',       toggleborder,        {0} },
     { MODKEY,                       'E',       toggleexplorer,      {0} },
+    { MODKEY|MOD_CONTROL,           'L',       writelog,            {0} },
     { MODKEY,                       '0',       view,                {.ui = ~0 } },
     { MODKEY|MOD_SHIFT,             '0',       tag,                 {.ui = ~0 } },
     TAGKEYS(                        '1',                            0)

@@ -192,6 +192,7 @@ static void toggleexplorer(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
+static void writelog(const Arg *arg);
 static void unmanage(Client *c);
 static void updatebar(void);
 static void updategeom(void);
@@ -1463,6 +1464,29 @@ toggleview(const Arg *arg) {
         tagset[seltags] = mask;
         arrange();
     }
+}
+
+void
+writelog(const Arg *arg) {
+    Client *c;
+    FILE *fout;
+    fout = fopen("dwm-win32.log", "w");
+    if (fout == NULL) return;
+
+    fprintf(fout, "hwnd, parent, tag, visible, classname, title\n");
+
+    for (c = clients; c; c = c->next) {
+        fprintf(fout, "%d,", c->hwnd);
+        fprintf(fout, "%d,", c->parent == NULL ? 0 : c->parent);
+        fprintf(fout, "%d,", c->tags);
+        fprintf(fout, "%d,", IsWindowVisible(c->hwnd));
+        fwprintf(fout, getclientclassname(c->hwnd));
+        fprintf(fout, ",");
+        fwprintf(fout, getclienttitle(c->hwnd));
+        fprintf(fout, "\n");
+    }
+
+    fclose(fout);
 }
 
 void

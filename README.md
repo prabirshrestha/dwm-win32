@@ -94,6 +94,8 @@ Usage
 
   `MOD + Control + q`  Quit dwm.
 
+  `MOD + Control + l`  Log all window state.
+
 
  ## Mouse
 
