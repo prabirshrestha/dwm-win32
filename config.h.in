@@ -19,7 +19,7 @@ static const unsigned int fontsize = 20;
 #define selbgcolor 0x00775500
 #define selfgcolor 0x00eeeeee
 
-static const unsigned int borderpx = 0;    /* border pixel of windows */
+static const unsigned int borderpx = 8;    /* border pixel of windows */
 static const unsigned int textmargin = 15; /* margin for the text displayed on the bar */
 static bool showbar = true;                /* false means no bar */
 static bool topbar = true;                 /* false means bottom bar */
@@ -92,6 +92,7 @@ static int clock_interval = 15000;
 
 /* commands */
 static const wchar_t *termcmd[] = {L"wt.exe", NULL};
+static const wchar_t *chrome[] = {L"chrome.exe", NULL};
 
 static Key keys[] = {
     /* modifier                     key        function             argument */
@@ -108,6 +109,7 @@ static Key keys[] = {
     {MODKEY | MOD_CONTROL, VK_RETURN, zoom, {0}},
     {MODKEY, VK_TAB, view, {0}},
     {MODKEY, 'C', killclient, {0}},
+    {MODKEY | MOD_SHIFT, 'C', spawn, {.v = chrome}},
     {MODKEY, 'T', setlayout, {.v = &layouts[0]}},
     {MODKEY, 'F', setlayout, {.v = &layouts[1]}},
     {MODKEY, 'M', setlayout, {.v = &layouts[2]}},

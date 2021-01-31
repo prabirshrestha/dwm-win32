@@ -1213,20 +1213,21 @@ void drawborder(Client *c, COLORREF color)
 {
 #if 0
     HDC hdc = GetWindowDC(c->hwnd);
-
 #if 0
     /* this would be another way, but it uses standard sytem colors */
-    RECT area = { .left = 0, .top = 0, .right = c->w, .bottom = c->h };
+    RECT area = {.left = 0, .top = 0, .right = c->w, .bottom = c->h};
     DrawEdge(hdc, &area, BDR_RAISEDOUTER | BDR_SUNKENINNER, BF_RECT);
 #else
-    HPEN pen = CreatePen(PS_SOLID, borderpx, color);
-    SelectObject(hdc, pen);
-    MoveToEx(hdc, 0, 0, NULL);
-    LineTo(hdc, c->w, 0);
-    LineTo(hdc, c->w, c->h);
-    LineTo(hdc, 0, c->h);
-    LineTo(hdc, 0, 0);
-    DeleteObject(pen);
+    
+    // HPEN pen = CreatePen(PS_SOLID, borderpx, color);
+    // SelectObject(hdc, pen);
+    // MoveToEx(hdc, 0, 0, NULL);
+    // LineTo(hdc, c->w, 0);
+    // LineTo(hdc, c->w, c->h);
+    // LineTo(hdc, 0, c->h);
+    // LineTo(hdc, 0, 0);
+    // DeleteObject(pen);
+
 #endif
 
     ReleaseDC(c->hwnd, hdc);
