@@ -74,7 +74,7 @@ static Layout layouts[] = {
 };
 
 /* key definitions */
-#define MODKEY (MOD_ALT)
+#define MODKEY (MOD_WIN)
 #define TAGKEYS(KEY, TAG)                                          \
     {MODKEY, KEY, view, {.ui = 1 << TAG}},                         \
         {MODKEY | MOD_CONTROL, KEY, toggleview, {.ui = 1 << TAG}}, \
@@ -96,7 +96,7 @@ static const wchar_t *chrome[] = {L"chrome.exe", NULL};
 
 static Key keys[] = {
     /* modifier                     key        function             argument */
-    {0}, // ??? dummy empty
+    //     {0}, // ??? dummy empty
     {MOD_CONTROL | MOD_ALT, 'T', spawn, {.v = termcmd}},
     {MODKEY | MOD_CONTROL, 'B', togglebar, {0}},
     {MODKEY, VK_DOWN, focusstack, {.i = +1}},
