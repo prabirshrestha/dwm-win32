@@ -93,6 +93,7 @@ static int clock_interval = 15000;
 /* commands */
 static const wchar_t *termcmd[] = {L"wt.exe", NULL};
 static const wchar_t *chrome[] = {L"chrome.exe", NULL};
+static const wchar_t *explorer[] = {L"explorer.exe", NULL};
 
 static Key keys[] = {
     /* modifier                     key        function             argument */
@@ -121,7 +122,8 @@ static Key keys[] = {
     {MODKEY | MOD_CONTROL, VK_SPACE, setlayout, {0}},
     {MODKEY | MOD_SHIFT, VK_SPACE, togglefloating, {0}},
     {MODKEY, 'N', toggleborder, {0}},
-    {MODKEY, 'E', toggleexplorer, {0}},
+    {MODKEY, 'E', spawn, {.v = explorer}},
+    {MODKEY | MOD_SHIFT, 'E', toggleexplorer, {0}},
     {MODKEY | MOD_CONTROL, 'L', writelog, {0}},
     {MODKEY, '0', view, {.ui = ~0}},
     {MODKEY | MOD_SHIFT, '0', tag, {.ui = ~0}},
