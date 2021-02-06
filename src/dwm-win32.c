@@ -650,18 +650,9 @@ void focus(Client *c)
     setselected(c);
     if (sel)
     {
-        //Artificially presses Alt key, won't change focus if we dont do that
-        INPUT ip;
-        ip.type = INPUT_KEYBOARD;
-        ip.ki.wScan = 0;
-        ip.ki.time = 0;
-        ip.ki.dwExtraInfo = 0;
-        ip.ki.wVk = VK_MENU;
-        ip.ki.dwFlags = 0;
-        SendInput(1, &ip, sizeof(INPUT));
-        ip.ki.dwFlags = KEYEVENTF_KEYUP;
-        SendInput(1, &ip, sizeof(INPUT));
-
+        //Artificially presses VK_F13 key, won't change focus if we dont do that
+        keybd_event(VK_F13, 0, 0, 0);
+        keybd_event(VK_F13, 0, 0x0002, 0);
         SetForegroundWindow(sel->hwnd);
     }
 }
