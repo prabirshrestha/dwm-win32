@@ -649,7 +649,12 @@ void focus(Client *c)
 {
     setselected(c);
     if (sel)
+    {
+        //Artificially presses VK_F13 key, won't change focus if we dont do that
+        keybd_event(VK_F13, 0, 0, 0);
+        keybd_event(VK_F13, 0, 0x0002, 0);
         SetForegroundWindow(sel->hwnd);
+    }
 }
 
 void focusstack(const Arg *arg)
@@ -1094,10 +1099,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             Client *c = getclient((HWND)lParam);
             switch (wParam & 0x7fff)
             {
-            /* The first two events are also trigger if windows
-                     * are being hidden or shown because of a tag
-                     * switch, therefore we ignore them in this case.
-                     */
+                /* The first two events are also trigger if windows
+                 * are being hidden or shown because of a tag
+                 * switch, therefore we ignore them in this case.
+                 */
             case HSHELL_WINDOWCREATED:
                 debug(L"window created: %s\n", getclienttitle((HWND)lParam));
                 if (!c && ismanageable((HWND)lParam))
@@ -1405,7 +1410,8 @@ void setup(lua_State *L, HINSTANCE hInstance)
     /* Grab a dynamic id for the SHELLHOOK message to be used later */
     shellhookid = RegisterWindowMessageW(L"SHELLHOOK");
 
-    wineventhook = SetWinEventHook(EVENT_OBJECT_CLOAKED, EVENT_OBJECT_UNCLOAKED, NULL, wineventproc, 0, 0, WINEVENT_OUTOFCONTEXT);
+    wineventhook = SetWinEventHook(EVENT_OBJECT_CLOAKED, EVENT_OBJECT_UNCLOAKED, NULL,
+                                   wineventproc, 0, 0, WINEVENT_OUTOFCONTEXT);
 
     if (!wineventhook)
         die(L"Could not SetWinEventHook");
@@ -1822,14 +1828,6 @@ LRESULT __stdcall HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
             kbdStruct = *((KBDLLHOOKSTRUCT *)lParam);
             // a key (non-system) is pressed.
             //0x45 = Virtual Key della lettera E
-
-            /* 
-            *TODO: 
-            * - Vedere qual'è o quali sono i mod da config.h (bisogna importarla)
-            * - ciclare poi tutte le keys (guardando solo alle VK e non alle MOD)
-            * - Dentro il for fare l'if che c'è qui sotto lanciando anche la funzione
-            * - PROFIT ???
-            */
             int i;
             //4294934529
             bool win = GetAsyncKeyState(VK_LWIN) != 0;
@@ -1843,11 +1841,11 @@ LRESULT __stdcall HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
                 if (kbdStruct.vkCode == (int)keys[i].key)
                 {
                     int k = 0;
-                    int a = ((keys[i].mod & MOD_ALT) & (1 << k)) >> k; //Controllo che MOD_WIN Sia hotkey
+                    int a = ((keys[i].mod & MOD_ALT) & (1 << k)) >> k; //Controllo che MOD_ALT Sia hotkey
                     k = 1;
-                    int c = ((keys[i].mod & MOD_CONTROL) & (1 << k)) >> k; //Controllo che MOD_WIN Sia hotkey
+                    int c = ((keys[i].mod & MOD_CONTROL) & (1 << k)) >> k; //Controllo che MOD_CONTROL Sia hotkey
                     k = 2;
-                    int s = ((keys[i].mod & MOD_SHIFT) & (1 << k)) >> k; //Controllo che MOD_WIN Sia hotkey
+                    int s = ((keys[i].mod & MOD_SHIFT) & (1 << k)) >> k; //Controllo che MOD_SHIFT Sia hotkey
                     k = 3;
                     int w = ((keys[i].mod & MOD_WIN) & (1 << k)) >> k; //Controllo che MOD_WIN Sia hotkey
 
@@ -1856,7 +1854,7 @@ LRESULT __stdcall HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
                         (c == ctrl) &&
                         (s == shift))
                     {
-                        keys[i].func(&keys[i].arg);
+                        keys[i].func(&(keys[i].arg));
                         return 1;
                     }
                 }
@@ -1886,14 +1884,10 @@ void ReleaseHook()
     UnhookWindowsHookEx(_hook);
 }
 
-void ConvertModKeys()
-{
-}
-
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nShowCmd)
 {
     SetProcessDPIAware();
-    ConvertModKeys();
+
     SetHook();
 
     MSG msg;
