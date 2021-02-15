@@ -81,7 +81,6 @@
 #define EVENT_OBJECT_CLOAKED 0x8017
 #define EVENT_OBJECT_UNCLOAKED 0x8018
 
-HHOOK g_KeybdHook = NULL;
 enum
 {
     CurNormal,
@@ -235,6 +234,9 @@ static void updategeom(void);
 static void view(const Arg *arg);
 static void zoom(const Arg *arg);
 static bool iscloaked(HWND hwnd);
+LRESULT __stdcall HookCallback(int nCode, WPARAM wParam, LPARAM lParam);
+void SetHook();
+void ReleaseHook();
 
 typedef BOOL (*RegisterShellHookWindowProc)(HWND);
 
@@ -430,8 +432,6 @@ void drawbar(void)
     wchar_t timestr[256];
     wchar_t localtimestr[256];
     wchar_t utctimestr[256];
-    wchar_t batterystr[256];
-    wchar_t out[256];
 
     for (c = clients; c; c = c->next)
     {
@@ -487,34 +487,10 @@ void drawbar(void)
         }
     }
 
-    // Battery status
-    if (showBattery)
-    {
-        SYSTEM_POWER_STATUS status;
-        if (GetSystemPowerStatus(&status))
-        {
-            unsigned char battery = status.BatteryLifePercent;
-            /* battery := 0..100 or 255 if unknown */
-            if (battery != 255)
-            {
-                if (status.ACLineStatus == 1)
-                {
-                    swprintf(batterystr, sizeof(batterystr), L" | ⚡🔋 : %u%%", battery);
-                }
-                else
-                {
-                    swprintf(batterystr, sizeof(batterystr), L" | 🔋 : %u%%", battery);
-                }
-            }
-        }
-    }
-    //concatenate all the parts to create the final output string
-    wcscpy(out, timestr);
-    wcscat(out, batterystr);
-    dc.w = TEXTW(out);
+    dc.w = TEXTW(timestr);
     dc.x = ww - dc.w;
 
-    drawtext(out, dc.norm, false);
+    drawtext(timestr, dc.norm, false);
 
     if ((dc.w = dc.x - x) > bh)
     {
@@ -1099,10 +1075,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             Client *c = getclient((HWND)lParam);
             switch (wParam & 0x7fff)
             {
-                /* The first two events are also trigger if windows
-                 * are being hidden or shown because of a tag
-                 * switch, therefore we ignore them in this case.
-                 */
+            /* The first two events are also trigger if windows
+                     * are being hidden or shown because of a tag
+                     * switch, therefore we ignore them in this case.
+                     */
             case HSHELL_WINDOWCREATED:
                 debug(L"window created: %s\n", getclienttitle((HWND)lParam));
                 if (!c && ismanageable((HWND)lParam))
@@ -1217,14 +1193,14 @@ scan(HWND hwnd, LPARAM lParam)
 
 void drawborder(Client *c, COLORREF color)
 {
-#if 1
+#if 0
     HDC hdc = GetWindowDC(c->hwnd);
-#if 1
+#if 0
     /* this would be another way, but it uses standard sytem colors */
     RECT area = {.left = 0, .top = 0, .right = c->w, .bottom = c->h};
     DrawEdge(hdc, &area, BDR_RAISEDOUTER | BDR_SUNKENINNER, BF_RECT);
 #else
-
+    
     // HPEN pen = CreatePen(PS_SOLID, borderpx, color);
     // SelectObject(hdc, pen);
     // MoveToEx(hdc, 0, 0, NULL);
@@ -1410,8 +1386,7 @@ void setup(lua_State *L, HINSTANCE hInstance)
     /* Grab a dynamic id for the SHELLHOOK message to be used later */
     shellhookid = RegisterWindowMessageW(L"SHELLHOOK");
 
-    wineventhook = SetWinEventHook(EVENT_OBJECT_CLOAKED, EVENT_OBJECT_UNCLOAKED, NULL,
-                                   wineventproc, 0, 0, WINEVENT_OUTOFCONTEXT);
+    wineventhook = SetWinEventHook(EVENT_OBJECT_CLOAKED, EVENT_OBJECT_UNCLOAKED, NULL, wineventproc, 0, 0, WINEVENT_OUTOFCONTEXT);
 
     if (!wineventhook)
         die(L"Could not SetWinEventHook");
