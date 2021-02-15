@@ -26,7 +26,6 @@ static bool topbar = true;                 /* false means bottom bar */
 static bool showclock = true;              /* false means no clock */
 static bool showutcclock = false;          /* false means no utc clock */
 static bool showexploreronstart = false;   /* false means do not show explorer/task bar on start */
-static bool showBattery = true;            /* false means the battery level is not shown*/
 
 /* tagging */
 static const wchar_t tags[][MAXTAGLEN] = {L"1", L"2", L"3", L"4", L"5", L"6", L"7", L"8", L"9"};
