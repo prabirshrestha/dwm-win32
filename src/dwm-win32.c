@@ -68,7 +68,6 @@
 
 #define die(...) if (TRUE) { eprint(true, __VA_ARGS__); eprint(true, L"Win32 Last Error: %d", GetLastError()); cleanup(NULL); exit(EXIT_FAILURE); }
 
-
 #define EVENT_OBJECT_CLOAKED 0x8017
 #define EVENT_OBJECT_UNCLOAKED 0x8018
 
@@ -105,9 +104,6 @@ struct Client {
     HWND hwnd;
     HWND parent;
     HWND root;
-    DWORD threadid;
-    DWORD processid;
-    const wchar_t *processname;
     int x, y, w, h;
     int bw; // XXX: useless?
     unsigned int tags;
@@ -139,6 +135,7 @@ typedef struct {
 typedef struct {
     const wchar_t *class;
     const wchar_t *title;
+    const wchar_t *processname;
     unsigned int tags;
     bool isfloating;
     bool ignoreborder;
@@ -164,6 +161,7 @@ static void movestack(const Arg *arg);
 static Client *getclient(HWND hwnd);
 LPWSTR getclientclassname(HWND hwnd);
 LPWSTR getclienttitle(HWND hwnd);
+LPWSTR getclientprocessname(HWND hwnd);
 HWND getroot(HWND hwnd);
 static void grabkeys(HWND hwnd);
 static void killclient(const Arg *arg);
@@ -241,7 +239,8 @@ applyrules(Client *c) {
     for (i = 0; i < LENGTH(rules); i++) {
         r = &rules[i];
         if ((!r->title || wcsstr(getclienttitle(c->hwnd), r->title))
-        && (!r->class || wcsstr(getclientclassname(c->hwnd), r->class))) {
+        && (!r->class || wcsstr(getclientclassname(c->hwnd), r->class))
+        && (!r->processname || wcsstr(getclientprocessname(c->hwnd), r->processname))) {
             c->isfloating = r->isfloating;
             c->ignoreborder = r->ignoreborder;
             c->tags |= r->tags & TAGMASK ? r->tags & TAGMASK : tagset[seltags]; 
@@ -640,6 +639,25 @@ getclienttitle(HWND hwnd) {
     return buf;
 }
 
+LPWSTR
+getclientprocessname(HWND hwnd) {
+    DWORD processid = 0;
+    DWORD buf_size = MAX_PATH;
+    static wchar_t buf[MAX_PATH];
+    GetWindowThreadProcessId(hwnd, &processid);
+    HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, processid);
+    if (hProc) {
+        if (QueryFullProcessImageNameW(hProc, 0, buf, &buf_size)) {
+            CloseHandle(hProc);
+            return buf;
+        } else {
+            CloseHandle(hProc);
+        }
+    }
+    return NULL;
+}
+
+
 HWND
 getroot(HWND hwnd) {
     HWND parent, deskwnd = GetDesktopWindow();
@@ -803,23 +821,10 @@ manage(HWND hwnd) {
         die(L"fatal: could not calloc() %u bytes for new client\n", sizeof(Client));
 
     c->hwnd = hwnd;
-    c->threadid = GetWindowThreadProcessId(hwnd, NULL);
     c->parent = GetParent(hwnd);
     c->root = getroot(hwnd);
     c->isalive = true;
-    c->processname = L"";
     c->iscloaked = iscloaked(hwnd);
-
-    GetWindowThreadProcessId(hwnd, &c->processid);
-    HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, c->processid);
-    if (hProc) {
-        DWORD buf_size = MAX_PATH;
-        wchar_t buf[MAX_PATH];
-        if (QueryFullProcessImageNameW(hProc, 0, buf, &buf_size)) {
-            c->processname = buf;
-        }
-        CloseHandle(hProc);
-    }
 
     static WINDOWPLACEMENT wp = {
         .length = sizeof(WINDOWPLACEMENT),
@@ -942,6 +947,7 @@ LRESULT CALLBACK barhandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 
+int i = 0;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -1324,8 +1330,8 @@ void
 showclientinfo(const Arg *arg) {
     HWND hwnd = GetForegroundWindow();
     wchar_t buffer[5000];
-    swprintf(buffer, sizeof(buffer), L"ClassName:  %s\nTitle:  %s", getclientclassname(hwnd), getclienttitle(hwnd));
-    MessageBoxW(NULL, buffer, L"Window class", MB_OK);
+    swprintf(buffer, sizeof(buffer), L"ClassName:  %s\nTitle:  %s\nProcessName: %s", getclientclassname(hwnd), getclienttitle(hwnd), getclientprocessname(hwnd));
+    MessageBoxW(NULL, buffer, L"dwm-win32 debug", MB_OK);
 }
 
 void
