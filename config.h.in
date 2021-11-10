@@ -34,21 +34,22 @@ static Rule rules[] = {
     /* class                                title                                   tags mask   isfloating      ignoreborder */
     { L"MultitaskingViewFrame",              NULL,                                   0,          true,           true },
     { L"MSCTFIME UI",                        NULL,                                   0,          true,           true },
-    { L"Microsoft-Windows-SnipperToolbar",   L"Snipping Tool",                        0,          true,           true },
+    { L"Microsoft-Windows-SnipperToolbar",   L"Snipping Tool",                       0,          true,           true },
     { L"Microsoft Text Input Application",   NULL,                                   0,          true,           true },
     { L"MSO_BORDEREFFECT_WINDOW_CLASS",      NULL,                                   0,          true,           true },
     { L"CASCADIA_HOSTING_WINDOW_CLASS",      NULL,                                   0,          false,          true },
     { L"ThumbnailDeviceHelperWnd",           NULL,                                   0,          true,           true },
     { L"EdgeUiInputTopWndClass",             NULL,                                   0,          true,           true },
     { L"CabinetWClass",                      NULL,                                   0,          false,          true }, /* file explorer */
+    { L"OperationStatusWindow",              NULL,                                   0,          false,          true }, /* explorer copy window */
     { L"XLMAIN",                             NULL,                                   0,          false,          true }, /* Excel */
     { NULL,                                  L"MSO_BORDEREFFECT_WINDOW_CLASS",       0,          false,          true }, /* Excel */
     { L"PPTFrameClass",                      NULL,                                   0,          false,          true }, /* PowerPoint */
     { L"OpusApp",                            NULL,                                   0,          false,          true }, /* Word */
     { NULL,                                  L"OneNote",                             0,          false,          true }, /* OneNote */
-    { NULL,                                 L"Snip & Sketch",                        0,          true,           true },
-    { L"Chrome_WidgetWin_1",                 L"Google Chrome",                        0,          false,          true },
-    { NULL,                                 L"vimrun.exe",                           0,          true,           true },
+    { NULL,                                  L"Snip & Sketch",                       0,          true,           true },
+    { L"Chrome_WidgetWin_1",                 L"Google Chrome",                       0,          false,          true },
+    { NULL,                                  L"vimrun.exe",                          0,          true,           true },
 };
 
 /* layout(s) */
