@@ -31,25 +31,24 @@ static const wchar_t tags[][MAXTAGLEN] = { L"1", L"2", L"3", L"4", L"5", L"6", L
 static unsigned int tagset[] = {1, 1}; /* after start, first tag is selected */
 
 static Rule rules[] = {
-    /* class                                title                                   tags mask   isfloating      ignoreborder */
-    { L"MultitaskingViewFrame",              NULL,                                   0,          true,           true },
-    { L"MSCTFIME UI",                        NULL,                                   0,          true,           true },
-    { L"Microsoft-Windows-SnipperToolbar",   L"Snipping Tool",                       0,          true,           true },
-    { L"Microsoft Text Input Application",   NULL,                                   0,          true,           true },
-    { L"MSO_BORDEREFFECT_WINDOW_CLASS",      NULL,                                   0,          true,           true },
-    { L"CASCADIA_HOSTING_WINDOW_CLASS",      NULL,                                   0,          false,          true },
-    { L"ThumbnailDeviceHelperWnd",           NULL,                                   0,          true,           true },
-    { L"EdgeUiInputTopWndClass",             NULL,                                   0,          true,           true },
-    { L"CabinetWClass",                      NULL,                                   0,          false,          true }, /* file explorer */
-    { L"OperationStatusWindow",              NULL,                                   0,          false,          true }, /* explorer copy window */
-    { L"XLMAIN",                             NULL,                                   0,          false,          true }, /* Excel */
-    { NULL,                                  L"MSO_BORDEREFFECT_WINDOW_CLASS",       0,          false,          true }, /* Excel */
-    { L"PPTFrameClass",                      NULL,                                   0,          false,          true }, /* PowerPoint */
-    { L"OpusApp",                            NULL,                                   0,          false,          true }, /* Word */
-    { NULL,                                  L"OneNote",                             0,          false,          true }, /* OneNote */
-    { NULL,                                  L"Snip & Sketch",                       0,          true,           true },
-    { L"Chrome_WidgetWin_1",                 L"Google Chrome",                       0,          false,          true },
-    { NULL,                                  L"vimrun.exe",                          0,          true,           true },
+    /* class                                 title               processname     tags mask   isfloating      ignoreborder */
+    { L"MultitaskingViewFrame",              NULL,                  NULL,               0,          true,           true },
+    { L"MSCTFIME UI",                        NULL,                  NULL,               0,          true,           true },
+    { L"Microsoft-Windows-SnipperToolbar",   L"Snipping Tool",      NULL,               0,          true,           true },
+    { L"Microsoft Text Input Application",   NULL,                  NULL,               0,          true,           true },
+    { L"MSO_BORDEREFFECT_WINDOW_CLASS",      NULL,                  NULL,               0,          true,           true },
+    { L"CASCADIA_HOSTING_WINDOW_CLASS",      NULL,                  NULL,               0,          false,          true },
+    { L"ThumbnailDeviceHelperWnd",           NULL,                  NULL,               0,          true,           true },
+    { L"EdgeUiInputTopWndClass",             NULL,                  NULL,               0,          true,           true },
+    { L"CabinetWClass",                      NULL,                  NULL,               0,          false,          true }, /* file explorer */
+    { L"OperationStatusWindow",              NULL,                  NULL,               0,          false,          true }, /* explorer copy window */
+    { NULL,                                  NULL,                  L"EXCEL.EXE",       1,          false,          true }, /* Excel */
+    { L"PPTFrameClass",                      NULL,                  NULL,               0,          false,          true }, /* PowerPoint */
+    { L"OpusApp",                            NULL,                  NULL,               0,          false,          true }, /* Word */
+    { NULL,                                  L"OneNote",            NULL,               0,          false,          true }, /* OneNote */
+    { NULL,                                  L"Snip & Sketch",      NULL,               0,          true,           true },
+    { L"Chrome_WidgetWin_1",                 L"Google Chrome",      NULL,               0,          false,          true },
+    { NULL,                                  L"vimrun.exe",         NULL,               0,          true,           true },
 };
 
 /* layout(s) */
