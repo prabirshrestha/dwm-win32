@@ -31,7 +31,7 @@ static const wchar_t tags[][MAXTAGLEN] = { L"1", L"2", L"3", L"4", L"5", L"6", L
 static unsigned int tagset[] = {1, 1}; /* after start, first tag is selected */
 
 static Rule rules[] = {
-    /* class                                 title               processname     tags mask   isfloating      ignoreborder */
+    /* class                                 title               processname        tags mask   isfloating      ignoreborder */
     { L"MultitaskingViewFrame",              NULL,                  NULL,               0,          true,           true },
     { L"MSCTFIME UI",                        NULL,                  NULL,               0,          true,           true },
     { L"Microsoft-Windows-SnipperToolbar",   L"Snipping Tool",      NULL,               0,          true,           true },
@@ -49,6 +49,7 @@ static Rule rules[] = {
     { NULL,                                  L"Snip & Sketch",      NULL,               0,          true,           true },
     { L"Chrome_WidgetWin_1",                 L"Google Chrome",      NULL,               0,          false,          true },
     { NULL,                                  L"vimrun.exe",         NULL,               0,          true,           true },
+    { L"org.wezfurlong.wezterm",             NULL,                  NULL,               0,          true,           true },
 };
 
 /* layout(s) */
