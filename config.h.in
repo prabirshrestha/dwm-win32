@@ -48,6 +48,7 @@ static Rule rules[] = {
     { NULL,                                  L"OneNote",            NULL,               0,          false,          true }, /* OneNote */
     { NULL,                                  L"Snip & Sketch",      NULL,               0,          true,           true },
     { L"Chrome_WidgetWin_1",                 L"Google Chrome",      NULL,               0,          false,          true },
+    { L"Chrome_WidgetWin_1",                 L"Visual Studio Code", NULL,               0,          false,          true },
     { NULL,                                  L"vimrun.exe",         NULL,               0,          true,           true },
     { L"org.wezfurlong.wezterm",             NULL,                  NULL,               0,          true,           true },
 };
