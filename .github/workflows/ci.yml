@@ -32,7 +32,9 @@ jobs:
         architecture: x64
 
     - name: Configure
+      shell: cmd
       run: configure.cmd
 
     - name: Build
+      shell: cmd
       run: build.cmd
