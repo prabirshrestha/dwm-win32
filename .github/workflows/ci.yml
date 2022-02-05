@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - ci
+    tags:
+      - 'v0.[0-9]+.[0-9]+'
+      - 'v0.[0-9]+.[0-9]+-beta.[0-9]+'
+      - 'v0.[0-9]+.[0-9]+-alpha.[0-9]+'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: Get the build metadata
+      shell: bash
+      run: |
+        echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+    - name: Setup MSVC
+      uses: bus1/cabuild/action/msdevshell@v1
+      with:
+        architecture: x64
+
+    - name: Configure
+      run: configure.cmd
+
+    - name: Build
+      run: build.cmd
