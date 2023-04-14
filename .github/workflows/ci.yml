@@ -21,25 +21,15 @@ jobs:
       with:
         fetch-depth: 1
 
+    - name: Setup Zig
+      uses: goto-bus-stop/setup-zig@v2
+      with:
+        version: 0.10.1
+
     - name: Get the build metadata
       shell: bash
       run: |
         echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
-    - name: Setup MSVC
-      uses: bus1/cabuild/action/msdevshell@v1
-      with:
-        architecture: x64
-
-    - name: Set up Clang
-      uses: egor-tensin/setup-clang@v1
-      with:
-        version: latest
-        platform: x64
-
-    - name: Configure
-      shell: cmd
-      run: configure.cmd
 
     - name: Build
       shell: cmd
@@ -50,6 +40,6 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       with:
         draft: true
-        files: build/dwm-win32.exe
+        files: dwm-win32.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
