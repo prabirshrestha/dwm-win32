@@ -60,10 +60,10 @@
 #define TAGMASK                 ((int)((1LL << LENGTH(tags)) - 1))
 #define TEXTW(x)                (textnw(x, wcslen(x)))
 
-#ifdef DEBUG
-#define debug(...) eprint(false, __VA_ARGS__)
-#else
+#ifdef NDEBUG
 #define debug(...) do { } while (false)
+#else
+#define debug(...) eprint(false, __VA_ARGS__)
 #endif
 
 #define die(...) if (TRUE) { eprint(true, __VA_ARGS__); eprint(true, L"Win32 Last Error: %d", GetLastError()); cleanup(NULL); exit(EXIT_FAILURE); }
@@ -1187,7 +1187,7 @@ static int lua_panic_handler(lua_State *L) {
 		const char *msg = NULL;
 		if (lua_type(L, -1) == LUA_TSTRING)
 			msg = lua_tostring(L, -1);
-        die(utf8_to_utf16(msg));
+        die(msg);
 	}
 	return 0;
 }

@@ -1,6 +1,4 @@
-*.o
 *.exe
-*.ilk
 *.pdb
 
 config.h
@@ -10,7 +8,7 @@ tags
 *.orig
 
 .clangd/
-build/
 compile_commands.json
 
 dwm-win32.log
+zig-cache/
