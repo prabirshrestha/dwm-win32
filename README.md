@@ -140,6 +140,9 @@ You can install the compiler by using [scoop](https://scoop.sh) as `scoop instal
 build.cmd
 ```
 
+* Remove `-DNDEBUG` and `-O2 -s` from `build.cmd` to build debug version.
+* Update version in build.cmd before release
+
 TODO
 ====
 
