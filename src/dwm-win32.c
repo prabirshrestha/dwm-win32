@@ -60,10 +60,10 @@
 #define TAGMASK                 ((int)((1LL << LENGTH(tags)) - 1))
 #define TEXTW(x)                (textnw(x, wcslen(x)))
 
-#ifdef DEBUG
-#define debug(...) eprint(false, __VA_ARGS__)
-#else
+#ifdef NDEBUG
 #define debug(...) do { } while (false)
+#else
+#define debug(...) eprint(false, __VA_ARGS__)
 #endif
 
 #define die(...) if (TRUE) { eprint(true, __VA_ARGS__); eprint(true, L"Win32 Last Error: %d", GetLastError()); cleanup(NULL); exit(EXIT_FAILURE); }

@@ -1,11 +1,4 @@
 /* See LICENSE file for copyright and license details. */
-#define DEBUG ${DEBUG}
-
-#define PROJECT_NAME "@PROJECT_NAME@"
-#define PROJECT_VER  "@PROJECT_VERSION@"
-#define PROJECT_VER_MAJOR "@PROJECT_VERSION_MAJOR@"
-#define PROJECT_VER_MINOR "@PROJECT_VERSION_MINOR@"
-#define PTOJECT_VER_PATCH "@PROJECT_VERSION_PATCH@"
 
 static const wchar_t *fontname         = L"Fira Code";
 static const unsigned int fontsize  = 20;
