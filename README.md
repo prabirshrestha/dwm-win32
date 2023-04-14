@@ -133,29 +133,16 @@ dll because it will be loaded into each process address space.
 COMPILING
 =========
 
-dwm-win32 requires `cmake`, `make`, `clang` and `Visual Studio 2019`. You can install the tools by using
-[scoop](https://scoop.sh) as `scoop install cmake make llvm`.
-
-To compile debug version of dwm-win32 use the following command:
+dwm-win32 requires [zig](https://ziglang.org/) to compile. Source code for dwm-win32 is written in C and uses `zig cc` to compile C to native code.
+You can install the compiler by using [scoop](https://scoop.sh) as `scoop install zig`.
 
 ```cmd
-configure.cmd
 build.cmd
-```
-
-Other examples:
-
-```cmake
-cmake -G "Visual Studio 16 2019" -A Win32 -S . -B "build\32bit" -DCMAKE_BUILD_TYPE=Release
-cmake -G "Visual Studio 16 2019" -A x64 -S . -B "build\64bit" -DCMAKE_BUILD_TYPE=Release
-cmake --build build\32bit --config Release
-cmake --build build\64bit --config Release
 ```
 
 TODO
 ====
 
- - support clang compiler
  - support luajit
  - show/hide child windows upon tag switch, in theory this should already
    work but in practice we need to tweak ismanageable() so that it
