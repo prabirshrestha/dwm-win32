@@ -1187,7 +1187,7 @@ static int lua_panic_handler(lua_State *L) {
 		const char *msg = NULL;
 		if (lua_type(L, -1) == LUA_TSTRING)
 			msg = lua_tostring(L, -1);
-        die(utf8_to_utf16(msg));
+        die(msg);
 	}
 	return 0;
 }
