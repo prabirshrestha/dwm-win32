@@ -67,6 +67,8 @@ Usage
 
   `MOD + Shift + c` Close focused window.
 
+  `MOD + Shift + a` Force rearrange.
+
   `MOD + Shift + Space` Toggle focused window between tiled and floating state.
 
   `MOD + n` Toggles border of currently focused window.

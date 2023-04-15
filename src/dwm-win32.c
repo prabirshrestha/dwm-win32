@@ -158,6 +158,7 @@ void eprint(bool premortem, const wchar_t *errstr, ...);
 static void focus(Client *c);
 static void focusstack(const Arg *arg);
 static void movestack(const Arg *arg);
+static void forcearrange(const Arg *arg);
 static Client *getclient(HWND hwnd);
 LPWSTR getclientclassname(HWND hwnd);
 LPWSTR getclienttitle(HWND hwnd);
@@ -1632,6 +1633,18 @@ movestack(const Arg *arg) {
 
 		arrange();
 	}
+}
+
+void
+forcearrange(const Arg *arg) {
+    Client *c;
+    for (c = clients; c; c = c->next) {
+        c->x = 0;
+        c->y = 0;
+        c->h = 0;
+        c->w = 0;
+    }
+    arrange();
 }
 
 
