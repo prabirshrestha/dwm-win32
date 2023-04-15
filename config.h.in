@@ -43,7 +43,7 @@ static Rule rules[] = {
     { L"Chrome_WidgetWin_1",                 L"Google Chrome",      NULL,               0,          false,          true },
     { L"Chrome_WidgetWin_1",                 L"Visual Studio Code", NULL,               0,          false,          true },
     { NULL,                                  L"vimrun.exe",         NULL,               0,          true,           true },
-    { NULL,                                  L"spyglass",           NULL,               0,          true,           true }, /* https://github.com/a5huynh/spyglass */
+    { NULL,                                  NULL,                  L"Spyglass.exe",               0,          true,           true }, /* https://github.com/a5huynh/spyglass */
     { L"TaskManagerWindow",                  NULL,                  NULL,               0,          true,           true },
 };
 
