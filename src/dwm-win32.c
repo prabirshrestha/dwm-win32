@@ -825,13 +825,14 @@ manage(HWND hwnd) {
     c->root = getroot(hwnd);
     c->isalive = true;
     c->iscloaked = iscloaked(hwnd);
+    c->isminimized = IsIconic(hwnd);
 
     static WINDOWPLACEMENT wp = {
         .length = sizeof(WINDOWPLACEMENT),
         .showCmd = SW_RESTORE,
     };
 
-    if (IsWindowVisible(hwnd))
+    if (IsWindowVisible(hwnd) && !c->isminimized)
         SetWindowPlacement(hwnd, &wp);
     
     c->isfloating = (!(wi.dwStyle & WS_MINIMIZEBOX) && !(wi.dwStyle & WS_MAXIMIZEBOX));
@@ -850,7 +851,7 @@ manage(HWND hwnd) {
         setborder(c, false);
         
 
-    if (c->isfloating && IsWindowVisible(hwnd)) {
+    if (c->isfloating && IsWindowVisible(hwnd) && !c->isminimized) {
         debug(L" new floating window: x: %d y: %d w: %d h: %d\n", wi.rcWindow.left, wi.rcWindow.top, wi.rcWindow.right - wi.rcWindow.left, wi.rcWindow.bottom - wi.rcWindow.top);
         resize(c, wi.rcWindow.left, wi.rcWindow.top, wi.rcWindow.right - wi.rcWindow.left, wi.rcWindow.bottom - wi.rcWindow.top);
     }
@@ -877,7 +878,7 @@ nextchild(Client *p, Client *c) {
 
 Client *
 nexttiled(Client *c) {
-    for (; c && (c->isfloating || !ISVISIBLE(c)); c = c->next);
+    for (; c && (c->isfloating || c->isminimized || !ISVISIBLE(c)); c = c->next);
     return c;
 }
 
