@@ -424,9 +424,9 @@ drawbar(void) {
             gmtime_s(&date, &timer);
             wcsftime(utctimestr, 255, clockfmt, &date);
 
-            swprintf(timestr, sizeof(timestr), L"%s | UTC: %s", localtimestr, utctimestr);
+            swprintf(timestr, sizeof(timestr), L"%ls | UTC: %ls", localtimestr, utctimestr);
         } else {
-            swprintf(timestr, sizeof(localtimestr), L"%s", localtimestr);
+            swprintf(timestr, sizeof(localtimestr), L"%ls", localtimestr);
         }
 
         dc.w = TEXTW(timestr);
