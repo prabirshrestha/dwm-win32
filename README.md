@@ -135,7 +135,7 @@ dll because it will be loaded into each process address space.
 COMPILING
 =========
 
-dwm-win32 requires [zig](https://ziglang.org/) to compile. Source code for dwm-win32 is written in C and uses `zig cc` to compile C to native code.
+dwm-win32 requires [zig](https://ziglang.org/) and [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/) (You can use the Visual Studio Installer to download only headless build tools without the full IDE) to compile. Source code for dwm-win32 is written in C and uses `zig cc` to compile C to native code.
 You can install the compiler by using [scoop](https://scoop.sh) as `scoop install zig`.
 
 ```cmd
