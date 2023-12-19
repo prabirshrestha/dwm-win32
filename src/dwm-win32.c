@@ -693,6 +693,10 @@ ismanageable(HWND hwnd) {
     if (hwnd == 0)
         return false;
 
+    if (IsHungAppWindow(hwnd)) {
+        return false;
+    }
+
     if (getclient(hwnd))
         return true;
 
