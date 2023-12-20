@@ -917,7 +917,7 @@ resize(Client *c, int x, int y, int w, int h) {
         c->w = w;
         c->h = h;
         debug(L" resize %d: %s: x: %d y: %d w: %d h: %d\n", c->hwnd, getclienttitle(c->hwnd), x, y, w, h);
-        SetWindowPos(c->hwnd, HWND_TOP, c->x, c->y, c->w, c->h, SWP_NOACTIVATE);
+        SetWindowPos(c->hwnd, HWND_TOP, c->x - 7, c->y, c->w + 14, c->h + 7, SWP_NOACTIVATE);
     }
 }
 
