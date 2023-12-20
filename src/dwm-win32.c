@@ -390,6 +390,9 @@ drawbar(void) {
     wchar_t timestr[256];
     wchar_t localtimestr[256];
     wchar_t utctimestr[256];
+    wchar_t batterystr[256];
+    wchar_t out[256];
+
 
     for (c = clients; c; c = c->next) {
         occ |= c->tags;
@@ -435,11 +438,29 @@ drawbar(void) {
         } else {
             swprintf(timestr, sizeof(localtimestr), L"%ls", localtimestr);
         }
-
-        dc.w = TEXTW(timestr);
-        dc.x = ww - dc.w;
-        drawtext(timestr, dc.norm, false);
     }
+    // Battery status
+    if (showBattery) {
+        SYSTEM_POWER_STATUS status;
+        if (GetSystemPowerStatus(&status)) {
+            unsigned char battery = status.BatteryLifePercent;
+            /* battery := 0..100 or 255 if unknown */
+            if (battery != 255) {
+                if (status.ACLineStatus == 1) {
+                    swprintf(batterystr, sizeof(batterystr), L" | C %u%%", battery);
+                } else {
+                    swprintf(batterystr, sizeof(batterystr), L" | D %u%%", battery);
+                }
+            }
+        }
+    }
+  
+    // concatenate all the parts to create the final output string
+    wcscpy(out, timestr);
+    wcscat(out, batterystr);
+    dc.w = TEXTW(out);
+    dc.x = ww - dc.w;
+    drawtext(out, dc.norm, false);
 
     if ((dc.w = dc.x - x) > bh) {
         dc.x = x;
