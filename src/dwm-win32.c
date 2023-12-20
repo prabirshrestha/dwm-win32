@@ -71,6 +71,8 @@
 #define EVENT_OBJECT_CLOAKED 0x8017
 #define EVENT_OBJECT_UNCLOAKED 0x8018
 
+HHOOK g_KeybdHook = NULL;
+
 enum { CurNormal, CurResize, CurMove, CurLast };        /* cursor */
 enum { ColBorder, ColFG, ColBG, ColLast };            /* color */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle };    /* clicks */
@@ -559,8 +561,12 @@ setselected(Client *c) {
 void
 focus(Client *c) {
     setselected(c);
-    if (sel)
+    if (sel){
+    	   //Artificially presses VK_F13 key, won't change focus if we dont do that (better performance) bert1337/dwm-win32/commit/6e331064f5db68ff3b7a2b2a38cdd3810e94d38a
+        keybd_event(VK_F13, 0, 0, 0);
+        keybd_event(VK_F13, 0, 0x0002, 0);
         SetForegroundWindow(sel->hwnd);
+    }
 }
 
 void
@@ -1698,10 +1704,104 @@ forcearrange(const Arg *arg) {
     arrange();
 }
 
+// variable to store the HANDLE to the hook. Don't declare it anywhere else then globally
+// or you will get problems since every function uses this variable.
+HHOOK _hook;
+
+// This struct contains the data received by the hook callback. As you see in the callback function
+// it contains the thing you will need: vkCode = virtual key code.
+KBDLLHOOKSTRUCT kbdStruct;
+
+// This is the callback function. Consider it the event that is raised when, in this case,
+// a key is pressed.
+static bool ctrlPressed = false;
+static bool ctrlAPressed = false;
+char str[256];
+
+LRESULT __stdcall HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
+{
+
+    LPMSG msg = (LPMSG)lParam;
+
+    if (nCode >= 0)
+    {
+        // the action is valid: HC_ACTION.
+        if (wParam == WM_KEYDOWN)
+        {
+            // lParam is the pointer to the struct containing the data needed, so cast and assign it to kdbStruct.
+            kbdStruct = *((KBDLLHOOKSTRUCT *)lParam);
+            // a key (non-system) is pressed.
+            //0x45 = Virtual Key della lettera E
+
+            /* 
+            *TODO: 
+            * - Vedere qual'è o quali sono i mod da config.h (bisogna importarla)
+            * - ciclare poi tutte le keys (guardando solo alle VK e non alle MOD)
+            * - Dentro il for fare l'if che c'è qui sotto lanciando anche la funzione
+            * - PROFIT ???
+            */
+            int i;
+            //4294934529
+            bool win = GetAsyncKeyState(VK_LWIN) != 0;
+            bool ctrl = GetAsyncKeyState(VK_LCONTROL) != 0;
+            bool alt = GetAsyncKeyState(VK_LMENU) != 0;
+            bool shift = GetAsyncKeyState(VK_LSHIFT) != 0;
+
+            for (i = 0; i < LENGTH(keys); i++)
+            {
+                //RegisterHotKey(hwnd, i, keys[i].mod, keys[i].key);
+                if (kbdStruct.vkCode == (int)keys[i].key)
+                {
+                    int k = 0;
+                    int a = ((keys[i].mod & MOD_ALT) & (1 << k)) >> k; //Controllo che MOD_ALT Sia hotkey
+                    k = 1;
+                    int c = ((keys[i].mod & MOD_CONTROL) & (1 << k)) >> k; //Controllo che MOD_CONTROL Sia hotkey
+                    k = 2;
+                    int s = ((keys[i].mod & MOD_SHIFT) & (1 << k)) >> k; //Controllo che MOD_SHIFT Sia hotkey
+                    k = 3;
+                    int w = ((keys[i].mod & MOD_WIN) & (1 << k)) >> k; //Controllo che MOD_WIN Sia hotkey
+
+                    if ((w == win) &&
+                        (a == alt) &&
+                        (c == ctrl) &&
+                        (s == shift))
+                    {
+                        keys[i].func(&(keys[i].arg));
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+    // call the next hook in the hook chain. This is nessecary or your hook chain will break and the hook stops
+    return CallNextHookEx(_hook, nCode, wParam, lParam);
+}
+
+void SetHook()
+{
+    // Set the hook and set it to use the callback function above
+    // WH_KEYBOARD_LL means it will set a low level keyboard hook. More information about it at MSDN.
+    // The last 2 parameters are NULL, 0 because the callback function is in the same thread and window as the
+    // function that sets and releases the hook. If you create a hack you will not need the callback function
+    // in another place then your own code file anyway. Read more about it at MSDN.
+    //if (!(_hook = SetWindowsHookEx(WH_KEYBOARD_LL, HookCallback, NULL, 0)))
+    if (!(_hook = SetWindowsHookEx(WH_KEYBOARD_LL, HookCallback, NULL, 0)))
+    {
+        MessageBox(NULL, "Failed to install hook!", "Error", MB_ICONERROR);
+    }
+}
+
+void ReleaseHook()
+{
+    UnhookWindowsHookEx(_hook);
+}
+
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nShowCmd) {
 	SetProcessDPIAware();
 
+	SetHook();
+	
     MSG msg;
 
     HANDLE mutex = CreateMutexW(NULL, TRUE, NAME);
