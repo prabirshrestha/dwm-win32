@@ -772,7 +772,7 @@ ismanageable(HWND hwnd) {
     if (iscloaked(hwnd))
         return false;
 
-    if (wcsstr(classname, L"Windows.UI.Core.CoreWindow") && (
+    if (wcsstr(classname, L"Windows.UI.Core.CoreWindow") || (
         wcsstr(title, L"Windows Shell Experience Host") ||
         wcsstr(title, L"Microsoft Text Input Application") ||
         wcsstr(title, L"Action center") ||
