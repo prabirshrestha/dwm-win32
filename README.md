@@ -1,3 +1,11 @@
+Changes in Comparison to main
+=============================
+- PerTag patch
+- Battery Indicator
+- Gapless Tiling with offset
+- Added MOD_WIN support as Mod key instead of ALT
+- Cyclic check for Hung windows with clock Timer to call unmanage()
+
 dwm-win32 is a port of the well known X11 window manager dwm to Microsoft
 Windows.
 
@@ -45,15 +53,13 @@ Usage
 
   `MOD + Control + b`  Toggles bar on and off.
 
-  `MOD + e` Toogles windows explorer and taskbar on and off.
+  `MOD + Shift + e` Toogles windows explorer and taskbar on and off.
 
   `MOD + t` Sets tiled layout.
 
   `MOD + f` Sets floating layout.
 
   `MOD + m` Sets monocle layout.
-
-  `MOD + Control + space` Toggles between current and previous layout.
 
   `MOD + j` Focus next window.
 
@@ -65,15 +71,15 @@ Usage
 
   `MOD + Control + Return` Zooms/cycles focused window to/from master area (tiled layouts only).
 
-  `MOD + Shift + c` Close focused window.
+  `MOD + q` Close focused window.
 
-  `MOD + Shift + a` Force rearrange.
+  `MOD + Shift + f` Force rearrange.
 
   `MOD + Shift + Space` Toggle focused window between tiled and floating state.
 
   `MOD + n` Toggles border of currently focused window.
 
-  `Mod + i` Display classname of currently focused window, useful for writing
+  `Mod + + Shift + i` Display classname of currently focused window, useful for writing
      tagging rules.
 
   `MOD + Tab` Toggles to the previously selected tags.
@@ -96,7 +102,7 @@ Usage
 
   `MOD + Control + q`  Quit dwm.
 
-  `MOD + Control + l`  Log all window state.
+  `MOD + Control + l`  Log all window state. (Disabled)
 
 
  ## Mouse

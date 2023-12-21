@@ -71,6 +71,8 @@
 #define EVENT_OBJECT_CLOAKED 0x8017
 #define EVENT_OBJECT_UNCLOAKED 0x8018
 
+HHOOK g_KeybdHook = NULL;
+
 enum { CurNormal, CurResize, CurMove, CurLast };        /* cursor */
 enum { ColBorder, ColFG, ColBG, ColLast };            /* color */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle };    /* clicks */
@@ -219,6 +221,11 @@ static UINT shellhookid;    /* Window Message id */
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
+
+static int curtag = 1, prevtag = 1;
+static Layout *lts[LENGTH(tags) + 1];
+static double mfacts[LENGTH(tags) + 1];
+static bool showbars[LENGTH(tags) + 1];
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { wchar_t limitexceeded[sizeof(unsigned int) * 8 < LENGTH(tags) ? -1 : 1]; };
@@ -383,6 +390,9 @@ drawbar(void) {
     wchar_t timestr[256];
     wchar_t localtimestr[256];
     wchar_t utctimestr[256];
+    wchar_t batterystr[256];
+    wchar_t out[256];
+
 
     for (c = clients; c; c = c->next) {
         occ |= c->tags;
@@ -428,11 +438,29 @@ drawbar(void) {
         } else {
             swprintf(timestr, sizeof(localtimestr), L"%ls", localtimestr);
         }
-
-        dc.w = TEXTW(timestr);
-        dc.x = ww - dc.w;
-        drawtext(timestr, dc.norm, false);
     }
+    // Battery status
+    if (showBattery) {
+        SYSTEM_POWER_STATUS status;
+        if (GetSystemPowerStatus(&status)) {
+            unsigned char battery = status.BatteryLifePercent;
+            /* battery := 0..100 or 255 if unknown */
+            if (battery != 255) {
+                if (status.ACLineStatus == 1) {
+                    swprintf(batterystr, sizeof(batterystr), L" | C %u%%", battery);
+                } else {
+                    swprintf(batterystr, sizeof(batterystr), L" | D %u%%", battery);
+                }
+            }
+        }
+    }
+  
+    // concatenate all the parts to create the final output string
+    wcscpy(out, timestr);
+    wcscat(out, batterystr);
+    dc.w = TEXTW(out);
+    dc.x = ww - dc.w;
+    drawtext(out, dc.norm, false);
 
     if ((dc.w = dc.x - x) > bh) {
         dc.x = x;
@@ -554,8 +582,12 @@ setselected(Client *c) {
 void
 focus(Client *c) {
     setselected(c);
-    if (sel)
+    if (sel){
+    	   //Artificially presses VK_F13 key, won't change focus if we dont do that (better performance) bert1337/dwm-win32/commit/6e331064f5db68ff3b7a2b2a38cdd3810e94d38a
+        keybd_event(VK_F13, 0, 0, 0);
+        keybd_event(VK_F13, 0, 0x0002, 0);
         SetForegroundWindow(sel->hwnd);
+    }
 }
 
 void
@@ -740,7 +772,7 @@ ismanageable(HWND hwnd) {
     if (iscloaked(hwnd))
         return false;
 
-    if (wcsstr(classname, L"Windows.UI.Core.CoreWindow") && (
+    if (wcsstr(classname, L"Windows.UI.Core.CoreWindow") || (
         wcsstr(title, L"Windows Shell Experience Host") ||
         wcsstr(title, L"Microsoft Text Input Application") ||
         wcsstr(title, L"Action center") ||
@@ -912,7 +944,7 @@ resize(Client *c, int x, int y, int w, int h) {
         c->w = w;
         c->h = h;
         debug(L" resize %d: %s: x: %d y: %d w: %d h: %d\n", c->hwnd, getclienttitle(c->hwnd), x, y, w, h);
-        SetWindowPos(c->hwnd, HWND_TOP, c->x, c->y, c->w, c->h, SWP_NOACTIVATE);
+        SetWindowPos(c->hwnd, HWND_TOP, c->x - 7, c->y, c->w + 14, c->h + 7, SWP_NOACTIVATE);
     }
 }
 
@@ -1130,7 +1162,7 @@ setlayout(const Arg *arg) {
     if (!arg || !arg->v || arg->v != lt[sellt])
         sellt ^= 1;
     if (arg && arg->v)
-        lt[sellt] = (Layout *)arg->v;
+	lt[sellt] = lts[curtag] = (Layout *)arg->v;
     if (sel)
         arrange();
     else
@@ -1147,7 +1179,7 @@ setmfact(const Arg *arg) {
     f = arg->f < 1.0 ? arg->f + mfact : arg->f - 1.0;
     if (f < 0.1 || f > 0.9)
         return;
-    mfact = f;
+    mfact = mfacts[curtag] = f;
     arrange();
 }
 
@@ -1253,7 +1285,21 @@ setup(lua_State *L, HINSTANCE hInstance) {
 
     EnumWindows(scan, 0);
 
+    /* init mfacts */
+    for(i=0; i < LENGTH(tags) + 1 ; i++) {
+	    mfacts[i] = mfact;
+    }
+
+    /* init layouts */
+    for(i=0; i < LENGTH(tags) + 1; i++) {
+	    lts[i] = &layouts[0];
+    }
+
     setupbar(hInstance);
+
+    for(i=0; i < LENGTH(tags) + 1; i++) {
+	    showbars[i] = showbar;
+    }
 
     grabkeys(dwmhwnd);
 
@@ -1423,7 +1469,7 @@ tile(void) {
 
 void
 togglebar(const Arg *arg) {
-    showbar = !showbar;
+    showbar = showbars[curtag] = !showbar;
     updategeom();
     updatebar();
     arrange();
@@ -1482,7 +1528,20 @@ toggleview(const Arg *arg) {
     unsigned int mask = tagset[seltags] ^ (arg->ui & TAGMASK);
 
     if (mask) {
+	    if(mask == ~0) {
+		    prevtag = curtag;
+		    curtag = 0;
+	    }
+	    if(!(mask & 1 << (curtag - 1))) {
+		    prevtag = curtag;
+		    for (i=0; !(mask & 1 << i); i++);
+		    curtag = i + 1;
+	    }
         tagset[seltags] = mask;
+	lt[sellt] = lts[curtag];
+	mfact = mfacts[curtag];
+	if (showbar != showbars[curtag])
+		togglebar(NULL);
         arrange();
     }
 }
@@ -1565,11 +1624,28 @@ updategeom(void) {
 
 void
 view(const Arg *arg) {
+    unsigned int i;
     if ((arg->ui & TAGMASK) == tagset[seltags])
         return;
     seltags ^= 1; /* toggle sel tagset */
-    if (arg->ui & TAGMASK)
-        tagset[seltags] = arg->ui & TAGMASK;
+    if(arg->ui & TAGMASK) {
+	    tagset[seltags] = arg->ui & TAGMASK;
+	    prevtag = curtag;
+	    if(arg->ui == ~0)
+		    curtag = 0;
+	    else {
+		    for (i=0; !(arg->ui & 1 << i); i++);
+		    curtag = i + 1;
+	    }
+    } else {
+	    prevtag= curtag ^ prevtag;
+	    curtag^= prevtag;
+	    prevtag= curtag ^ prevtag;
+    }
+    lt[sellt]= lts[curtag];
+    mfact = mfacts[curtag];
+    if(showbar != showbars[curtag])
+	    togglebar(NULL);
     arrange();
 }
 
@@ -1649,6 +1725,98 @@ forcearrange(const Arg *arg) {
     arrange();
 }
 
+// variable to store the HANDLE to the hook. Don't declare it anywhere else then globally
+// or you will get problems since every function uses this variable.
+HHOOK _hook;
+
+// This struct contains the data received by the hook callback. As you see in the callback function
+// it contains the thing you will need: vkCode = virtual key code.
+KBDLLHOOKSTRUCT kbdStruct;
+
+// This is the callback function. Consider it the event that is raised when, in this case,
+// a key is pressed.
+static bool ctrlPressed = false;
+static bool ctrlAPressed = false;
+char str[256];
+
+LRESULT __stdcall HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
+{
+
+    LPMSG msg = (LPMSG)lParam;
+
+    if (nCode >= 0)
+    {
+        // the action is valid: HC_ACTION.
+        if (wParam == WM_KEYDOWN)
+        {
+            // lParam is the pointer to the struct containing the data needed, so cast and assign it to kdbStruct.
+            kbdStruct = *((KBDLLHOOKSTRUCT *)lParam);
+            // a key (non-system) is pressed.
+            //0x45 = Virtual Key della lettera E
+
+            /* 
+            *TODO: 
+            * - Vedere qual'è o quali sono i mod da config.h (bisogna importarla)
+            * - ciclare poi tutte le keys (guardando solo alle VK e non alle MOD)
+            * - Dentro il for fare l'if che c'è qui sotto lanciando anche la funzione
+            * - PROFIT ???
+            */
+            int i;
+            //4294934529
+            bool win = GetAsyncKeyState(VK_LWIN) != 0;
+            bool ctrl = GetAsyncKeyState(VK_LCONTROL) != 0;
+            bool alt = GetAsyncKeyState(VK_LMENU) != 0;
+            bool shift = GetAsyncKeyState(VK_LSHIFT) != 0;
+
+            for (i = 0; i < LENGTH(keys); i++)
+            {
+                //RegisterHotKey(hwnd, i, keys[i].mod, keys[i].key);
+                if (kbdStruct.vkCode == (int)keys[i].key)
+                {
+                    int k = 0;
+                    int a = ((keys[i].mod & MOD_ALT) & (1 << k)) >> k; //Controllo che MOD_ALT Sia hotkey
+                    k = 1;
+                    int c = ((keys[i].mod & MOD_CONTROL) & (1 << k)) >> k; //Controllo che MOD_CONTROL Sia hotkey
+                    k = 2;
+                    int s = ((keys[i].mod & MOD_SHIFT) & (1 << k)) >> k; //Controllo che MOD_SHIFT Sia hotkey
+                    k = 3;
+                    int w = ((keys[i].mod & MOD_WIN) & (1 << k)) >> k; //Controllo che MOD_WIN Sia hotkey
+
+                    if ((w == win) &&
+                        (a == alt) &&
+                        (c == ctrl) &&
+                        (s == shift))
+                    {
+                        keys[i].func(&(keys[i].arg));
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+    // call the next hook in the hook chain. This is nessecary or your hook chain will break and the hook stops
+    return CallNextHookEx(_hook, nCode, wParam, lParam);
+}
+
+void SetHook()
+{
+    // Set the hook and set it to use the callback function above
+    // WH_KEYBOARD_LL means it will set a low level keyboard hook. More information about it at MSDN.
+    // The last 2 parameters are NULL, 0 because the callback function is in the same thread and window as the
+    // function that sets and releases the hook. If you create a hack you will not need the callback function
+    // in another place then your own code file anyway. Read more about it at MSDN.
+    //if (!(_hook = SetWindowsHookEx(WH_KEYBOARD_LL, HookCallback, NULL, 0)))
+    if (!(_hook = SetWindowsHookEx(WH_KEYBOARD_LL, HookCallback, NULL, 0)))
+    {
+        MessageBox(NULL, "Failed to install hook!", "Error", MB_ICONERROR);
+    }
+}
+
+void ReleaseHook()
+{
+    UnhookWindowsHookEx(_hook);
+}
+
 //catches unhandled exceptions and performs necessary cleanup before a crash, you can use Structured Exception Handling (SEH) in Windows
 // This function will be called when an exception occurs
 void cleanupOnException() {
@@ -1661,6 +1829,8 @@ void cleanupOnException() {
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nShowCmd) {
 	SetProcessDPIAware();
 
+	SetHook();
+	
     MSG msg;
 
     HANDLE mutex = CreateMutexW(NULL, TRUE, NAME);
