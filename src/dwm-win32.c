@@ -220,6 +220,11 @@ static UINT shellhookid;    /* Window Message id */
 /* configuration, allows nested code to access above variables */
 #include "config.h"
 
+static int curtag = 1, prevtag = 1;
+static Layout *lts[LENGTH(tags) + 1];
+static double mfacts[LENGTH(tags) + 1];
+static bool showbars[LENGTH(tags) + 1];
+
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { wchar_t limitexceeded[sizeof(unsigned int) * 8 < LENGTH(tags) ? -1 : 1]; };
 
@@ -1130,7 +1135,7 @@ setlayout(const Arg *arg) {
     if (!arg || !arg->v || arg->v != lt[sellt])
         sellt ^= 1;
     if (arg && arg->v)
-        lt[sellt] = (Layout *)arg->v;
+	lt[sellt] = lts[curtag] = (Layout *)arg->v;
     if (sel)
         arrange();
     else
@@ -1147,7 +1152,7 @@ setmfact(const Arg *arg) {
     f = arg->f < 1.0 ? arg->f + mfact : arg->f - 1.0;
     if (f < 0.1 || f > 0.9)
         return;
-    mfact = f;
+    mfact = mfacts[curtag] = f;
     arrange();
 }
 
@@ -1253,7 +1258,21 @@ setup(lua_State *L, HINSTANCE hInstance) {
 
     EnumWindows(scan, 0);
 
+    /* init mfacts */
+    for(i=0; i < LENGTH(tags) + 1 ; i++) {
+	    mfacts[i] = mfact;
+    }
+
+    /* init layouts */
+    for(i=0; i < LENGTH(tags) + 1; i++) {
+	    lts[i] = &layouts[0];
+    }
+
     setupbar(hInstance);
+
+    for(i=0; i < LENGTH(tags) + 1; i++) {
+	    showbars[i] = showbar;
+    }
 
     grabkeys(dwmhwnd);
 
@@ -1423,7 +1442,7 @@ tile(void) {
 
 void
 togglebar(const Arg *arg) {
-    showbar = !showbar;
+    showbar = showbars[curtag] = !showbar;
     updategeom();
     updatebar();
     arrange();
@@ -1482,7 +1501,20 @@ toggleview(const Arg *arg) {
     unsigned int mask = tagset[seltags] ^ (arg->ui & TAGMASK);
 
     if (mask) {
+	    if(mask == ~0) {
+		    prevtag = curtag;
+		    curtag = 0;
+	    }
+	    if(!(mask & 1 << (curtag - 1))) {
+		    prevtag = curtag;
+		    for (i=0; !(mask & 1 << i); i++);
+		    curtag = i + 1;
+	    }
         tagset[seltags] = mask;
+	lt[sellt] = lts[curtag];
+	mfact = mfacts[curtag];
+	if (showbar != showbars[curtag])
+		togglebar(NULL);
         arrange();
     }
 }
@@ -1565,11 +1597,28 @@ updategeom(void) {
 
 void
 view(const Arg *arg) {
+    unsigned int i;
     if ((arg->ui & TAGMASK) == tagset[seltags])
         return;
     seltags ^= 1; /* toggle sel tagset */
-    if (arg->ui & TAGMASK)
-        tagset[seltags] = arg->ui & TAGMASK;
+    if(arg->ui & TAGMASK) {
+	    tagset[seltags] = arg->ui & TAGMASK;
+	    prevtag = curtag;
+	    if(arg->ui == ~0)
+		    curtag = 0;
+	    else {
+		    for (i=0; !(arg->ui & 1 << i); i++);
+		    curtag = i + 1;
+	    }
+    } else {
+	    prevtag= curtag ^ prevtag;
+	    curtag^= prevtag;
+	    prevtag= curtag ^ prevtag;
+    }
+    lt[sellt]= lts[curtag];
+    mfact = mfacts[curtag];
+    if(showbar != showbars[curtag])
+	    togglebar(NULL);
     arrange();
 }
 
