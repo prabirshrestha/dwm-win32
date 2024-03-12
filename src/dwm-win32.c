@@ -1649,6 +1649,14 @@ forcearrange(const Arg *arg) {
     arrange();
 }
 
+//catches unhandled exceptions and performs necessary cleanup before a crash, you can use Structured Exception Handling (SEH) in Windows
+// This function will be called when an exception occurs
+void cleanupOnException() {
+    Client *c;
+    for (c = clients; c; c = c->next) {
+        unmanage(c);
+    }
+}
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nShowCmd) {
 	SetProcessDPIAware();
@@ -1662,14 +1670,23 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
         die(L"dwm-win32 already running");
 
 	lua_State *L = luaL_newstate();
-    setup(L, hInstance);
+	
+    // the __try block contains the main program code. If an unhandled exception occurs anywhere in this block, control immediately transfers to the __except block. The cleanupOnException function is then called to unmanage all windows before the program crashes.
+    // Establish an exception handler
+    __try {
+        setup(L, hInstance);
 
-    while (GetMessage(&msg, NULL, 0, 0) > 0) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        while (GetMessage(&msg, NULL, 0, 0) > 0) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+
+        cleanup(L);
     }
-
-    cleanup(L);
+    // Catch any unhandled exceptions
+    __except(EXCEPTION_EXECUTE_HANDLER) {
+        cleanupOnException();
+    }
 
     return msg.wParam;
 }
