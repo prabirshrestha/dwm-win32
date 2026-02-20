@@ -369,7 +369,9 @@ GLES_CreateTexture(SDL_Renderer * renderer, SDL_Texture * texture)
     renderdata->glGenTextures(1, &data->texture);
     result = renderdata->glGetError();
     if (result != GL_NO_ERROR) {
-        SDL_free(data);
+        if (texture->access == SDL_TEXTUREACCESS_STREAMING) {
+            SDL_free(data->pixels);
+        }
         return GLES_SetError("glGenTextures()", result);
     }
 
@@ -397,7 +399,9 @@ GLES_CreateTexture(SDL_Renderer * renderer, SDL_Texture * texture)
 
     result = renderdata->glGetError();
     if (result != GL_NO_ERROR) {
-        SDL_free(data);
+        if (texture->access == SDL_TEXTUREACCESS_STREAMING) {
+            SDL_free(data->pixels);
+        }
         return GLES_SetError("glTexImage2D()", result);
     }
 
